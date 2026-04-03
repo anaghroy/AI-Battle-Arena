@@ -1,0 +1,157 @@
+import {
+  generateCohereSolution,
+  generateGroqSolution,
+} from "./model.service.js";
+import { generateImageBattle } from "./image.service.js";
+import { buildBattleGraph } from "../graph/battle.graph.js";
+import { BattleModel } from "../models/battle.model.js";
+import { describeImage } from "./image-caption.service.js";
+import { generateSummaryA, generateSummaryB } from "./model.service.js";
+import { uploadPdfToImageKit } from "./image.service.js";
+import { extractPdfText } from "./pdf.service.js";
+
+type BattleType = "text" | "image" | "pdf";
+
+export const runBattle = async (
+  userInput: string,
+  type: BattleType = "text",
+  fileBuffer?: Buffer,
+) => {
+  try {
+    console.log("Running battle type:", type);
+    if (type === "pdf") {
+      if (!fileBuffer) throw new Error("PDF file required");
+
+      console.log("Extracting PDF text...");
+
+      const text = await extractPdfText(fileBuffer);
+
+      const trimmedText = text.slice(0, 5000); // avoid token overflow
+
+      console.log("Generating summaries...");
+
+      const [solutionA, solutionB] = await Promise.all([
+        generateSummaryA(trimmedText),
+        generateSummaryB(trimmedText),
+      ]);
+
+      console.log("Running judge...");
+
+      const graph = buildBattleGraph();
+
+      const result = await graph.invoke({
+        userInput:
+          "Compare two AI-generated summaries of a PDF and decide which is better",
+        solutionA: solutionA.text,
+        solutionB: solutionB.text,
+      });
+
+      console.log("Uploading PDF...");
+
+      const pdfUrl = await uploadPdfToImageKit(fileBuffer, "pdf");
+
+      await BattleModel.create({
+        type: "pdf",
+        input: text.replace(/\s+/g, " ").slice(0, 4000),
+        solutionA: {
+          text: solutionA.text,
+          model: solutionA.model,
+          usage: solutionA.usage,
+        },
+        solutionB: {
+          text: solutionB.text,
+          model: solutionB.model,
+          usage: solutionB.usage,
+        },
+        verdict: result.verdict,
+        pdfUrl,
+      });
+
+      return {
+        pdfUrl,
+        solutionA,
+        solutionB,
+        verdict: result.verdict,
+      };
+    }
+    if (type === "text") {
+      const [solutionA, solutionB] = await Promise.all([
+        generateCohereSolution(userInput),
+        generateGroqSolution(userInput),
+      ]);
+
+      const graph = buildBattleGraph();
+
+      const result = await graph.invoke({
+        userInput,
+        solutionA: solutionA.text,
+        solutionB: solutionB.text,
+      });
+
+      await BattleModel.create({
+        type: "text",
+        input: userInput,
+        solutionA,
+        solutionB,
+        verdict: result.verdict,
+      });
+
+      return { solutionA, solutionB, verdict: result.verdict };
+    }
+
+    if (type === "image") {
+      console.log("Generating images...");
+
+      const imageResult = await generateImageBattle(userInput);
+      const { solutionA, solutionB } = imageResult;
+
+      console.log("Describing images...");
+
+      const [descA, descB] = await Promise.all([
+        describeImage(solutionA.imageUrl),
+        describeImage(solutionB.imageUrl),
+      ]);
+
+      console.log("Running judge...");
+
+      const graph = buildBattleGraph();
+
+      const result = await graph.invoke({
+        userInput,
+        solutionA: descA,
+        solutionB: descB,
+      });
+
+      await BattleModel.create({
+        type: "image",
+        input: userInput,
+        solutionA: {
+          imageUrl: solutionA.imageUrl,
+          text: descA,
+          model: solutionA.model,
+        },
+        solutionB: {
+          imageUrl: solutionB.imageUrl,
+          text: descB,
+          model: solutionB.model,
+        },
+        verdict: result.verdict,
+      });
+
+      return {
+        solutionA: {
+          ...solutionA,
+          description: descA,
+        },
+        solutionB: {
+          ...solutionB,
+          description: descB,
+        },
+        verdict: result.verdict,
+      };
+    }
+  } catch (error) {
+    console.error("Battle Service Error:", error);
+    throw new Error("Battle execution failed");
+  }
+};
