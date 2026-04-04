@@ -1,0 +1,65 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  width: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--font-regular), sans-serif;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
+/*scrollbar-background*/
+::-webkit-scrollbar {
+  background-color: #000000;
+  width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(166, 166, 166, 0.523);
+  border-radius: 50px;
+}
+
+/*All fonts SRC*/
+@font-face {
+  font-family: regular;
+  src: url(../../assets/fonts/PlayfairDisplay-Regular.ttf);
+}
+@font-face {
+  font-family: medium;
+  src: url(../../assets/fonts/PlayfairDisplay-Medium.ttf);
+}
+@font-face {
+  font-family: italic;
+  src: url(../../assets/fonts/PlayfairDisplay-Italic.ttf);
+}
+@font-face {
+  font-family: bold;
+  src: url(../../assets/fonts/PlayfairDisplay-Bold.ttf);
+}
+@font-face {
+  font-family: semi-bold;
+  src: url(../../assets/fonts/PlayfairDisplay-SemiBold.ttf);
+}
+:root {
+  --font-regular: "regular", sans-serif;
+  --font-medium: "medium", sans-serif;
+  --font-italic: "italic", sans-serif;
+  --font-bold: "bold", sans-serif;
+  --font-semi-bold: "semi-bold", sans-serif;
+}
+
+/*Layouts*//*# sourceMappingURL=main.css.map */

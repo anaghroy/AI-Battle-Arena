@@ -8,8 +8,8 @@ export interface IUser extends Document {
   password?: string;
   verified: boolean;
   provider: "local" | "google";
-  googleId?: string | null;
-  picture?: string | null;
+  googleId: string | null;
+  picture: string | null;
 
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
@@ -55,22 +55,21 @@ const userSchema = new mongoose.Schema<IUser>(
       default: null,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // 3. Pre-save Hook
-userSchema.pre("save", async function (next) {
+userSchema.pre("save", async function () {
   const user = this as IUser;
 
-  if (!user.password || !user.isModified("password")) return next();
+  if (!user.password || !user.isModified("password")) return;
 
   user.password = await bcrypt.hash(user.password, 10);
-  next();
 });
 
 // 4. Instance Method
 userSchema.methods.comparePassword = async function (
-  candidatePassword: string
+  candidatePassword: string,
 ): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password as string);
 };

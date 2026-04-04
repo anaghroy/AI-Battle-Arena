@@ -1,0 +1,30 @@
+/*All fonts SRC*/
+@font-face {
+  font-family: regular;
+  src: url(../../assets/fonts/PlayfairDisplay-Regular.ttf);
+}
+@font-face {
+  font-family: medium;
+  src: url(../../assets/fonts/PlayfairDisplay-Medium.ttf);
+}
+@font-face {
+  font-family: italic;
+  src: url(../../assets/fonts/PlayfairDisplay-Italic.ttf);
+}
+@font-face {
+  font-family: bold;
+  src: url(../../assets/fonts/PlayfairDisplay-Bold.ttf);
+}
+
+@font-face {
+  font-family: semi-bold;
+  src: url(../../assets/fonts/PlayfairDisplay-SemiBold.ttf);
+}
+
+:root {
+  --font-regular: "regular", sans-serif;
+  --font-medium: "medium", sans-serif;
+  --font-italic: "italic", sans-serif;
+  --font-bold: "bold", sans-serif;
+  --font-semi-bold: "semi-bold", sans-serif;
+}

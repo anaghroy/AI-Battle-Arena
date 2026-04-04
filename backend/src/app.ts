@@ -1,14 +1,28 @@
 import express from "express";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import battleRouter from "./routes/battle.route.js";
-
+import authRouter from "./routes/auth.routes.js";
 const app = express()
 
-app.use(express.json())
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+app.use(cors());
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "public")));
+
+app.use("/api/auth", authRouter);
 app.use("/api/battle", battleRouter)
 
 app.get("/heath", (req, res)=>{
     res.json({message: "Server is running"})
 })
+
+
 
 export default app

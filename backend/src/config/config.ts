@@ -11,9 +11,14 @@ type AppConfig = {
   readonly NVIDIA_API_KEY: string;
   readonly BREVO_SENDER_EMAIL: string;
   readonly BREVO_API_KEY: string;
+  readonly GOOGLE_CLIENT_SECRET: string;
+  readonly GOOGLE_CLIENT_ID: string;
   readonly IMAGEKIT_PUBLIC_KEY: string;
   readonly IMAGEKIT_PRIVATE_KEY: string;
   readonly IMAGEKIT_URL_ENDPOINT: string;
+  readonly FRONTEND_URL: string;
+  readonly NODE_ENV:string;
+  readonly REDIS_URL:string;
 };
 
 const config: AppConfig = {
@@ -26,9 +31,14 @@ const config: AppConfig = {
   NVIDIA_API_KEY: process.env.NVIDIA_API_KEY as string,
   BREVO_SENDER_EMAIL: process.env.BREVO_SENDER_EMAIL as string,
   BREVO_API_KEY: process.env.BREVO_API_KEY as string,
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET as string,
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID as string,
   IMAGEKIT_PUBLIC_KEY: process.env.IMAGEKIT_PUBLIC_KEY as string,
   IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY as string,
   IMAGEKIT_URL_ENDPOINT: process.env.IMAGEKIT_URL_ENDPOINT as string,
+  FRONTEND_URL: process.env.FRONTEND_URL as string,
+  NODE_ENV:process.env.NODE_ENV as string,
+  REDIS_URL:process.env.REDIS_URL as string,
 };
 
 export default config;

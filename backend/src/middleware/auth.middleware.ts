@@ -2,19 +2,25 @@ import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import type { JwtPayload } from "jsonwebtoken";
 import config from "../config/config.js";
+import { redisClient } from "../config/redis.js";
 
-// 1. Extend Express Request to include user
-export interface AuthRequest extends Request {
-  user?: string | JwtPayload;
+// ✅ Define your JWT payload shape
+interface IUserPayload extends JwtPayload {
+  id: string;
+  username: string;
 }
 
-// 2. Middleware
-export const authUser = (
+// ✅ Extend Request
+export interface AuthRequest extends Request {
+  user?: IUserPayload;
+}
+
+export const authUser = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction,
-): void => {
-  const token = req.cookies?.token;
+): Promise<void> => {
+  const token = req.cookies?.token as string | undefined;
 
   if (!token) {
     res.status(401).json({
@@ -26,9 +32,23 @@ export const authUser = (
   }
 
   try {
-    const decoded = jwt.verify(token, config.JWT_SECRET as string);
+    const isBlacklisted = await redisClient.get(`blacklist:${token}`);
+
+    if (isBlacklisted) {
+      res.status(401).json({
+        message: "Token expired or logged out",
+        success: false,
+      });
+      return;
+    }
+
+    const decoded = jwt.verify(
+      token,
+      config.JWT_SECRET as string,
+    ) as IUserPayload;
 
     req.user = decoded;
+
     next();
   } catch (err) {
     res.status(401).json({
@@ -36,5 +56,6 @@ export const authUser = (
       success: false,
       err: "Invalid token",
     });
+    return;
   }
 };

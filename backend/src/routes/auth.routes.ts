@@ -1,0 +1,74 @@
+import { Router } from "express";
+import {
+  register,
+  verifyEmail,
+  login,
+  getMe,
+  logout,
+  resendVerificationEmail,
+  googleAuth,
+} from "../controllers/auth.controller.js";
+import {
+  registerValidator,
+  loginValidator,
+} from "../validations/auth.validator.js";
+import { authUser } from "../middleware/auth.middleware.js";
+
+const authRouter = Router();
+
+/**
+ * @route POST /api/auth/register
+ * @desc Register a new user
+ * @access Public
+ * @body { username, email, password }
+ */
+
+authRouter.post("/register", registerValidator, register);
+
+/**
+ * @route POST /api/auth/login
+ * @desc Login user and return JWT token
+ * @access Public
+ * @body { email, password }
+ */
+authRouter.post("/login", loginValidator, login);
+/**
+ * @route GET /api/auth/get-me
+ * @desc Get current logged in user's details
+ * @access Private
+ */
+authRouter.get("/get-me", authUser, getMe);
+
+/**
+ * @route GET /api/auth/verify-email
+ * @desc Verify user's email address
+ * @access Public
+ * @query { token }
+ */
+authRouter.get("/verify-email", verifyEmail);
+
+/**
+ * @route POST /api/auth/resend-verification
+ * @desc Resend verification email
+ * @access Public
+ * @body { email }
+ */
+authRouter.post("/resend-verification", resendVerificationEmail);
+
+/**
+ * @route POST /api/auth/google
+ * @desc Google authentication
+ * @access Public
+ * @body { token }
+ */
+authRouter.post("/google", googleAuth);
+
+/**
+ * @route POST /api/auth/logout
+ * @desc Logout user
+ * @access Private
+ */
+
+authRouter.post("/logout", authUser, logout);
+
+export default authRouter;
