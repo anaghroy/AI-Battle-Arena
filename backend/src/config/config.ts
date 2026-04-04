@@ -13,6 +13,8 @@ type AppConfig = {
   readonly BREVO_API_KEY: string;
   readonly GOOGLE_CLIENT_SECRET: string;
   readonly GOOGLE_CLIENT_ID: string;
+  readonly GITHUB_CLIENT_ID: string;
+  readonly GITHUB_CLIENT_SECRET: string;
   readonly IMAGEKIT_PUBLIC_KEY: string;
   readonly IMAGEKIT_PRIVATE_KEY: string;
   readonly IMAGEKIT_URL_ENDPOINT: string;
@@ -33,6 +35,8 @@ const config: AppConfig = {
   BREVO_API_KEY: process.env.BREVO_API_KEY as string,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET as string,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID as string,
+  GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID as string,
+  GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET as string,
   IMAGEKIT_PUBLIC_KEY: process.env.IMAGEKIT_PUBLIC_KEY as string,
   IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY as string,
   IMAGEKIT_URL_ENDPOINT: process.env.IMAGEKIT_URL_ENDPOINT as string,

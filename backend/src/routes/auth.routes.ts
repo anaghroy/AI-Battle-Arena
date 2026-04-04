@@ -7,6 +7,7 @@ import {
   logout,
   resendVerificationEmail,
   googleAuth,
+  githubAuth,
 } from "../controllers/auth.controller.js";
 import {
   registerValidator,
@@ -62,7 +63,13 @@ authRouter.post("/resend-verification", resendVerificationEmail);
  * @body { token }
  */
 authRouter.post("/google", googleAuth);
-
+/**
+ * @route POST /api/auth/github
+ * @desc Github authentication
+ * @access Public
+ * @body { token }
+ */
+authRouter.post("/github", githubAuth);
 /**
  * @route POST /api/auth/logout
  * @desc Logout user

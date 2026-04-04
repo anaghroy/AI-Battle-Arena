@@ -7,8 +7,9 @@ export interface IUser extends Document {
   email: string;
   password?: string;
   verified: boolean;
-  provider: "local" | "google";
-  googleId: string | null;
+  provider: "local" | "google" | "github";
+  googleId?: string | null;
+  githubId?: string | null;
   picture: string | null;
 
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -43,12 +44,20 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     provider: {
       type: String,
-      enum: ["local", "google"],
+      enum: ["local", "google", "github"],
       default: "local",
     },
     googleId: {
       type: String,
       default: null,
+      unique: true,
+      sparse: true,
+    },
+    githubId: {
+      type: String,
+      default: null,
+      unique: true,
+      sparse: true,
     },
     picture: {
       type: String,

@@ -8,6 +8,7 @@ import { OAuth2Client } from "google-auth-library";
 import type { AuthRequest } from "../middleware/auth.middleware.js";
 import config from "../config/config.js";
 import { redisClient } from "../config/redis.js";
+import axios from "axios";
 // Google client
 const client = new OAuth2Client(
   config.GOOGLE_CLIENT_ID as string,
@@ -375,6 +376,137 @@ export const googleAuth = async (
     console.error("Google Auth Error:", error);
     res.status(401).json({
       message: "Google authentication failed",
+    });
+  }
+};
+
+
+export const githubAuth = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { code } = req.body;
+
+    if (!code) {
+      res.status(400).json({ message: "GitHub code required" });
+      return;
+    }
+
+    // Step 1: Get access token
+    const tokenRes = await axios.post(
+      "https://github.com/login/oauth/access_token",
+      {
+        client_id: config.GITHUB_CLIENT_ID,
+        client_secret: config.GITHUB_CLIENT_SECRET,
+        code,
+      },
+      {
+        headers: {
+          Accept: "application/json",
+        },
+      },
+    );
+
+    const accessToken = tokenRes.data.access_token;
+
+    if (!accessToken) {
+      res.status(400).json({ message: "Failed to get access token" });
+      return;
+    }
+
+    // Step 2: Get user info
+    const userRes = await axios.get("https://api.github.com/user", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const githubUser = userRes.data;
+
+    // Step 3: Get email (IMPORTANT)
+    const emailRes = await axios.get(
+      "https://api.github.com/user/emails",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+
+    const primaryEmailObj = emailRes.data.find(
+      (e: any) => e.primary && e.verified,
+    );
+
+    const email: string | undefined = primaryEmailObj?.email;
+
+    if (!email) {
+      res.status(400).json({ message: "Email not found from GitHub" });
+      return;
+    }
+
+    // Safe values
+    const username: string =
+      typeof githubUser.login === "string"
+        ? githubUser.login
+        : email.split("@")[0];
+
+    const githubId: string =
+      typeof githubUser.id === "number"
+        ? String(githubUser.id)
+        : "";
+
+    const picture: string | null =
+      typeof githubUser.avatar_url === "string"
+        ? githubUser.avatar_url
+        : null;
+
+    // Step 4: Find or create user
+    let user = await userModel.findOne({ email });
+
+    if (!user) {
+      user = await userModel.create({
+        username,
+        email,
+        provider: "github",
+        githubId: githubId,
+        picture,
+        verified: true,
+      });
+    }
+
+    user.provider = "github";
+    await user.save();
+
+
+    // Step 5: Generate JWT
+    const token = jwt.sign(
+      { id: user._id.toString(), username: user.username },
+      config.JWT_SECRET as string,
+      { expiresIn: "3d" },
+    );
+
+    // Step 6: Set cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: config.NODE_ENV === "production",
+      sameSite: config.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 3 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      message: "GitHub login successful",
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+      },
+    });
+  } catch (error: any) {
+    console.error("GitHub Auth Error:", error.response?.data || error.message);
+
+    res.status(500).json({
+      message: "GitHub authentication failed",
     });
   }
 };
