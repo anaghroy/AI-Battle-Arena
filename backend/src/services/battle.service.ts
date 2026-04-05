@@ -9,8 +9,11 @@ import { describeImage } from "./image-caption.service.js";
 import { generateSummaryA, generateSummaryB } from "./model.service.js";
 import { uploadPdfToImageKit } from "./image.service.js";
 import { extractPdfText } from "./pdf.service.js";
+import { generateVideoBattle } from "./video.service.js";
+// import { extractFrames } from "./video-frame.service.js";
+import { describeVideo } from "./video-caption.service.js";
 
-type BattleType = "text" | "image" | "pdf";
+type BattleType = "text" | "image" | "pdf" | "video";
 
 export const runBattle = async (
   userInput: string,
@@ -133,6 +136,57 @@ export const runBattle = async (
         solutionB: {
           imageUrl: solutionB.imageUrl,
           text: descB,
+          model: solutionB.model,
+        },
+        verdict: result.verdict,
+      });
+
+      return {
+        solutionA: {
+          ...solutionA,
+          description: descA,
+        },
+        solutionB: {
+          ...solutionB,
+          description: descB,
+        },
+        verdict: result.verdict,
+      };
+    }
+    if (type === "video") {
+      console.log("Generating videos...");
+
+      const videoResult = await generateVideoBattle(userInput);
+      const { solutionA, solutionB } = videoResult;
+
+      console.log("Describing videos directly with Gemini API...");
+
+      const [descA, descB] = await Promise.all([
+        describeVideo(solutionA.videoUrl),
+        describeVideo(solutionB.videoUrl),
+      ]);
+
+      console.log("Running judge...");
+
+      const graph = buildBattleGraph();
+
+      const result = await graph.invoke({
+        userInput,
+        solutionA: descA,
+        solutionB: descB,
+      });
+
+      await BattleModel.create({
+        type: "video",
+        input: userInput,
+        solutionA: {
+          text: descA,
+          videoUrl: solutionA.videoUrl,
+          model: solutionA.model,
+        },
+        solutionB: {
+          text: descB,
+          videoUrl: solutionB.videoUrl,
           model: solutionB.model,
         },
         verdict: result.verdict,

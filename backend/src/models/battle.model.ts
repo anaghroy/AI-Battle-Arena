@@ -2,8 +2,9 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IBattle extends Document {
   input: string;
-  type: "text" | "image" | "pdf";
+  type: "text" | "image" | "pdf" | "video";
   pdfUrl?: string;
+  videoUrl?: string;
   solutionA: {
     text?: string;
     imageUrl?: string;
@@ -35,10 +36,13 @@ const battleSchema = new Schema<IBattle>(
   {
     type: {
       type: String,
-      enum: ["text", "image", "pdf"],
+      enum: ["text", "image", "pdf", "video"],
       required: true,
     },
     pdfUrl: {
+      type: String,
+    },
+    videoUrl:{
       type: String,
     },
     input: {

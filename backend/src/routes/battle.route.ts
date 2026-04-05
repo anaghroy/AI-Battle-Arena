@@ -5,6 +5,7 @@ import {
   imageBattle,
   pdfBattle,
   voiceBattle,
+  videoBattle
 } from "../controllers/battle.controller.js";
 import { authUser } from "../middleware/auth.middleware.js";
 
@@ -17,4 +18,6 @@ router.post("/voice", upload.single("audio"), voiceBattle);
 router.post("/image", imageBattle);
 
 router.post("/pdf", upload.single("file"), pdfBattle);
+
+router.post("/video", videoBattle);
 export default router;

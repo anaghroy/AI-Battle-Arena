@@ -115,3 +115,22 @@ export const pdfBattle = async (
     });
   }
 };
+
+export const videoBattle = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { input } = req.body;
+
+    const result = await runBattle(input, "video");
+
+    res.json(result);
+  } catch (error) {
+    console.error("Video Battle Error:", error);
+
+    res.status(500).json({
+      error: "Video processing failed",
+    });
+  }
+};
