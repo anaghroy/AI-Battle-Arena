@@ -2,27 +2,76 @@ import { create } from 'zustand';
 import { battleService } from '../services/battle.service';
 
 const useBattleStore = create((set, get) => ({
-  messages: [
-    {
-      id: 'initial-msg',
-      type: 'ai',
-      text: 'Hi there! How can I help you today?',
-      mode: 'text',
-      timestamp: new Date().toISOString(),
-      agent: 'A', // Assuming from screenshots we might have Agent A or similar later, default ai for now
-    }
-  ],
+  messages: [],
+  currentChatId: null,
+  history: [],
   isLoading: false,
   activeMode: 'text', // 'text', 'voice', 'image', 'pdf'
   
   setActiveMode: (mode) => set({ activeMode: mode }),
 
-  addMessage: (msg) => set((state) => ({
-    messages: [...state.messages, { ...msg, id: Date.now().toString(), timestamp: new Date().toISOString() }]
-  })),
+  addMessage: (msg) => {
+    const newMessage = { ...msg, id: Date.now().toString(), timestamp: new Date().toISOString() };
+    set((state) => {
+      const updatedMessages = [...state.messages, newMessage];
+      // Async sync without blocking UI
+      get().syncCurrentChat(updatedMessages);
+      return { messages: updatedMessages };
+    });
+  },
+
+  syncCurrentChat: async (updatedMessages) => {
+    const { currentChatId, fetchHistory } = get();
+    try {
+      const chat = await battleService.syncChat(currentChatId, updatedMessages);
+      if (!currentChatId && chat._id) {
+        set({ currentChatId: chat._id });
+        fetchHistory(); // Refresh sidebar list
+      }
+    } catch (error) {
+      console.error('Failed to sync chat:', error);
+    }
+  },
+
+  fetchHistory: async () => {
+    try {
+      const history = await battleService.getChats();
+      set({ history });
+    } catch (error) {
+      console.error('Failed to fetch history:', error);
+    }
+  },
+
+  loadChat: async (id) => {
+    set({ isLoading: true });
+    try {
+      const chat = await battleService.getChatById(id);
+      set({ currentChatId: chat._id, messages: chat.messages || [] });
+    } catch (error) {
+      console.error('Failed to load chat:', error);
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  removeHistory: async (id) => {
+    try {
+      await battleService.deleteChat(id);
+      set((state) => {
+        const resetCurrent = state.currentChatId === id;
+        return {
+          history: state.history.filter((chat) => chat._id !== id),
+          currentChatId: resetCurrent ? null : state.currentChatId,
+          messages: resetCurrent ? [] : state.messages,
+        };
+      });
+    } catch (error) {
+      console.error('Failed to delete chat:', error);
+    }
+  },
 
   sendMessage: async (inputData) => {
-    const { activeMode, addMessage } = get();
+    const { activeMode } = get();
     
     set({ isLoading: true });
     
@@ -35,15 +84,19 @@ const useBattleStore = create((set, get) => ({
       else if (activeMode === 'pdf') userMessageText = `📄 Analyzing PDF: ${inputData.name}`;
 
       const userMsgId = Date.now().toString();
-      set((state) => ({
-        messages: [...state.messages, { 
-          id: userMsgId, 
-          type: 'user', 
-          text: userMessageText, 
-          mode: activeMode, 
-          timestamp: new Date().toISOString() 
-        }]
-      }));
+      const userMsg = { 
+        id: userMsgId, 
+        type: 'user', 
+        text: userMessageText, 
+        mode: activeMode, 
+        timestamp: new Date().toISOString() 
+      };
+
+      set((state) => {
+        const msgs = [...state.messages, userMsg];
+        get().syncCurrentChat(msgs);
+        return { messages: msgs };
+      });
 
       let responseData = null;
 
@@ -56,11 +109,13 @@ const useBattleStore = create((set, get) => ({
           responseData = await battleService.sendVoice(inputData); // inputData is audio Blob
           // Update user message with transcribed text if available
           if (responseData.input) {
-             set((state) => ({
-               messages: state.messages.map(m => 
+             set((state) => {
+               const updated = state.messages.map(m => 
                  m.id === userMsgId ? { ...m, text: `🎙️ ${responseData.input}` } : m
-               )
-             }));
+               );
+               get().syncCurrentChat(updated);
+               return { messages: updated };
+             });
           }
           break;
         case 'image':
@@ -73,21 +128,27 @@ const useBattleStore = create((set, get) => ({
           throw new Error('Unknown mode');
       }
 
-      // Add AI response
-      // Assuming responseData structure contains 'text' or specific fields based on your backend integration logic.
-      // E.g., if multiple models return response, structure it. For now, pushing raw string based on standard completion.
-      const aiResponseText = typeof responseData === 'string' ? responseData : 
-                             (responseData.response || responseData.text || JSON.stringify(responseData));
+      // Add AI response parsing real data
+      if (responseData && responseData.solutionA && responseData.solutionB) {
+        get().addMessage({
+          type: 'ai-battle',
+          data: responseData,
+          mode: activeMode,
+        });
+      } else {
+        const aiResponseText = typeof responseData === 'string' ? responseData : 
+                               (responseData?.response || responseData?.text || JSON.stringify(responseData));
 
-      addMessage({
-        type: 'ai',
-        text: aiResponseText,
-        mode: activeMode,
-      });
+        get().addMessage({
+          type: 'ai',
+          text: aiResponseText,
+          mode: activeMode,
+        });
+      }
 
     } catch (error) {
       console.error("Battle interaction failed:", error);
-      addMessage({
+      get().addMessage({
         type: 'error',
         text: 'Sorry, there was an error processing your request.',
         mode: activeMode,
@@ -97,7 +158,7 @@ const useBattleStore = create((set, get) => ({
     }
   },
   
-  clearChat: () => set({ messages: [] })
+  clearChat: () => set({ messages: [], currentChatId: null })
 }));
 
 export default useBattleStore;

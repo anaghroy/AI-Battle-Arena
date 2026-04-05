@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { MessageSquarePlus, Trophy, Search, X, PanelLeftClose } from 'lucide-react';
+import { MessageSquarePlus, Trophy, Search, X, PanelLeftClose, Trash2 } from 'lucide-react';
 import useAuthStore from '../store/authStore';
+import useBattleStore from '../store/battleStore';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const { user, logout } = useAuthStore();
+  const { history, fetchHistory, loadChat, removeHistory, clearChat, currentChatId } = useBattleStore();
   const navigate = useNavigate();
   const [showLogout, setShowLogout] = useState(false);
+
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
 
   const handleLogout = async () => {
     await logout();
@@ -18,11 +24,28 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     toggleSidebar();
   };
 
+  const handleNewChat = () => {
+    clearChat();
+    handleNavClick();
+    navigate('/');
+  };
+
+  const handleLoadChat = (id) => {
+    loadChat(id);
+    handleNavClick();
+    navigate('/');
+  };
+
+  const handleDeleteChat = (e, id) => {
+    e.stopPropagation();
+    removeHistory(id);
+  };
+
   return (
     <div className={`sidebar ${isOpen ? '' : 'hidden'}`}>
       <div className="sidebar-header">
         <h1>
-          <span style={{ fontFamily: 'var(--font-regular)', letterSpacing: '2px' }}>🏛️ Arena</span>
+          <span style={{ fontFamily: 'var( --font-inter-regular)', letterSpacing: '2px' }}>🏛️ Arena</span>
         </h1>
         <button className="sidebar-toggle" onClick={toggleSidebar} title="Close Sidebar">
           <PanelLeftClose size={18} />
@@ -30,15 +53,14 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       </div>
 
       <nav className="sidebar-nav">
-        <NavLink 
-          to="/" 
-          end
-          className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-          onClick={handleNavClick}
+        <button 
+          className={`nav-item ${!currentChatId ? 'active' : ''}`}
+          onClick={handleNewChat}
+          style={{background:'none', border:'none', width:'100%', cursor:'pointer', textAlign:'left'}}
         >
           <MessageSquarePlus size={18} />
           New Chat
-        </NavLink>
+        </button>
         <NavLink 
           to="/leaderboard" 
           className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
@@ -52,6 +74,44 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           Search
         </button>
       </nav>
+
+      {/* Chat History Section */}
+      <div className="chat-history-section" style={{ flex: 1, overflowY: 'auto', padding: '0 20px', marginTop: '10px' }}>
+        <h4 style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '1px' }}>Recent Battles</h4>
+        {history.length === 0 ? (
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>No recent chats found.</p>
+        ) : (
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {history.map((chat) => (
+              <li key={chat._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <button 
+                  onClick={() => handleLoadChat(chat._id)}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
+                    color: currentChatId === chat._id ? 'var(--text-primary)' : 'var(--text-secondary)',
+                    fontSize: '0.85rem', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                    transition: 'color 0.2s', padding: '6px 0',
+                    fontFamily: 'var(--font-inter-regular)'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = currentChatId === chat._id ? 'var(--text-primary)' : 'var(--text-secondary)'}
+                >
+                  {chat.title}
+                </button>
+                <button 
+                  onClick={(e) => handleDeleteChat(e, chat._id)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: '4px' }}
+                  title="Delete Chat"
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#ef4444'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+                >
+                  <Trash2 size={16} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       <div className="sidebar-footer">
         {/* User Profile */}
@@ -77,7 +137,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 src={`https://api.dicebear.com/7.x/initials/svg?seed=${user?.email || 'User'}`} 
                 alt="User Avatar" 
               />
-              <span style={{ fontFamily: 'var(--font-medium)' }}>{user?.email || 'user@example.com'}</span>
+              <span style={{ fontFamily: 'var( --font-inter-regular)', fontSize: '0.6rem' }}>{user?.email || 'user@example.com'}</span>
             </div>
             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', marginBottom: '16px', color: 'var(--text-secondary)' }}>
               <input type="checkbox" /> Send me product updates and announcements

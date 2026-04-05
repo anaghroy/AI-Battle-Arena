@@ -16,23 +16,24 @@ const useAuthStore = create((set) => ({
   user: null,
   isAuthenticated: false,
   isLoading: false,
+  isCheckingAuth: true,
   error: null,
 
   checkAuth: async () => {
-    set({ isLoading: true, error: null });
+    set({ isCheckingAuth: true, error: null });
     try {
       const response = await api.get('/auth/get-me');
       set({
         user: response.data.user,
         isAuthenticated: true,
-        isLoading: false
+        isCheckingAuth: false
       });
       return true;
     } catch {
       set({ 
         user: null,
         isAuthenticated: false,
-        isLoading: false 
+        isCheckingAuth: false 
       });
       return false;
     }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -15,6 +15,20 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const App = () => {
+  const { checkAuth, isCheckingAuth } = useAuthStore();
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  if (isCheckingAuth) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100vw', backgroundColor: 'var(--bg-primary)' }}>
+        <div style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-regular)' }}>Loading Arena...</div>
+      </div>
+    );
+  }
+
   return (
     <Routes>
       {/* Protected Dashboard Routes */}
@@ -31,8 +45,12 @@ const App = () => {
       </Route>
 
       {/* Auth Routes */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/login" element={
+        useAuthStore.getState().isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />
+      } />
+      <Route path="/register" element={
+        useAuthStore.getState().isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />
+      } />
       <Route path="/verify" element={<VerifyEmailPage />} />
       <Route path="/verify-email" element={<VerifyEmailPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />

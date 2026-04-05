@@ -4,6 +4,10 @@
   src: url(../../assets/fonts/PlayfairDisplay-Regular.ttf);
 }
 @font-face {
+  font-family: inter-regular;
+  src: url(../../assets/fonts/Inter-Regular.otf);
+}
+@font-face {
   font-family: medium;
   src: url(../../assets/fonts/PlayfairDisplay-Medium.ttf);
 }
@@ -23,6 +27,7 @@
 
 :root {
   --font-regular: "regular", sans-serif;
+  --font-inter-regular: "inter-regular", sans-serif;
   --font-medium: "medium", sans-serif;
   --font-italic: "italic", sans-serif;
   --font-bold: "bold", sans-serif;

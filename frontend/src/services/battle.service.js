@@ -45,4 +45,25 @@ export const battleService = {
     });
     return response.data;
   },
+
+  // --- Chat Session Endpoints ---
+  getChats: async () => {
+    const res = await api.get('/chats');
+    return res.data;
+  },
+
+  getChatById: async (id) => {
+    const res = await api.get(`/chats/${id}`);
+    return res.data;
+  },
+
+  syncChat: async (chatId, messages) => {
+    const res = await api.post('/chats/sync', { chatId, messages });
+    return res.data;
+  },
+
+  deleteChat: async (id) => {
+    const res = await api.delete(`/chats/${id}`);
+    return res.data;
+  }
 };
