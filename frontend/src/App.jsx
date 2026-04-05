@@ -6,6 +6,7 @@ import VerifyEmailPage from './pages/VerifyEmailPage'
 import DashboardLayout from './layouts/DashboardLayout'
 import DashboardPage from './pages/DashboardPage'
 import LeaderboardPage from './pages/LeaderboardPage'
+import SearchPage from './pages/SearchPage'
 import useAuthStore from './store/authStore'
 
 const ProtectedRoute = ({ children }) => {
@@ -42,6 +43,7 @@ const App = () => {
       >
         <Route index element={<DashboardPage />} />
         <Route path="leaderboard" element={<LeaderboardPage />} />
+        <Route path="search" element={<SearchPage />} />
       </Route>
 
       {/* Auth Routes */}

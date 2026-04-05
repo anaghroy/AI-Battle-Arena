@@ -102,21 +102,15 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           <Trophy size={18} />
           Leaderboard
         </NavLink>
-        <button
-          className="nav-item"
+        <NavLink
+          style={{ fontFamily: "var(--font-inter-regular)" }}
+          to="/search"
+          className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
           onClick={handleNavClick}
-          style={{
-            background: "none",
-            border: "none",
-            width: "100%",
-            cursor: "pointer",
-            textAlign: "left",
-            fontFamily: "var(--font-inter-regular)",
-          }}
         >
           <Search size={18} />
           Search
-        </button>
+        </NavLink>
       </nav>
 
       {/* Chat History Section */}

@@ -125,3 +125,57 @@ export const deleteChat = async (req: Request, res: Response): Promise<void> => 
     res.status(500).json({ error: "Failed to delete chat" });
   }
 };
+
+// SEARCH CHATS
+export const searchChats = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = (req as any).user?.id;
+    const { q, category } = req.query;
+
+    if (!userId) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    // Base query scoped to the user
+    const query: any = { userId };
+
+    // Keyword Search
+    if (q && typeof q === 'string' && q.trim().length > 0) {
+      const searchTerm = q.trim();
+      // Use $text index search. Requires indices we mapped
+      query.$text = { $search: searchTerm };
+    }
+
+    // Categorical Array Element Matching
+    if (category && typeof category === 'string' && category.trim() !== '' && category.trim() !== 'search') {
+      const cat = category.toLowerCase().trim();
+
+      if (cat === 'battles') {
+        query.messages = { $elemMatch: { type: 'ai-battle' } };
+      } else if (cat === 'image') {
+        query.messages = { $elemMatch: { mode: 'image' } };
+      } else if (cat === 'video' || cat === 'pdf') {
+        // We link video loosely to pdf if not directly setup, assuming you mean media types
+        query.messages = { $elemMatch: { mode: 'pdf' } };
+      } else if (cat === 'code') {
+        // Fallback for code involves regex looking for backticks in text messages specifically, since code isn't standard indexing
+        if (query.messages) {
+          query.$and = [{ messages: query.messages }, { "messages.text": { $regex: '```', $options: 'i' } }];
+          delete query.messages;
+        } else {
+          query["messages.text"] = { $regex: '```', $options: 'i' };
+        }
+      }
+    }
+
+    const chats = await ChatModel.find(query)
+      .select("_id title createdAt updatedAt messages")
+      .sort({ updatedAt: -1 });
+
+    res.json(chats);
+  } catch (error) {
+    console.error("Error searching chats:", error);
+    res.status(500).json({ error: "Search failed" });
+  }
+};

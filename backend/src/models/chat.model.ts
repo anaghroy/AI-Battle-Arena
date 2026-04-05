@@ -63,5 +63,11 @@ const chatSchema = new Schema<IChat>(
 // Sort by newest chats first
 chatSchema.index({ createdAt: -1 });
 
+// Text index for robust full-text searching functionality on titles and nested message contents
+chatSchema.index(
+  { title: "text", "messages.text": "text" },
+  { weights: { title: 3, "messages.text": 1 }, name: "chat_text_index" }
+);
+
 export const ChatModel =
   mongoose.models.Chat || mongoose.model<IChat>("Chat", chatSchema);

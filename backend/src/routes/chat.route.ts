@@ -1,8 +1,11 @@
 import express from "express";
 import { authUser } from "../middleware/auth.middleware.js";
-import { getChats, getChatById, syncChat, deleteChat } from "../controllers/chat.controller.js";
+import { getChats, getChatById, syncChat, deleteChat, searchChats } from "../controllers/chat.controller.js";
 
 const router = express.Router();
+
+// Search chats across categories and queries
+router.get("/search", authUser, searchChats);
 
 // Get side-bar chat history list
 router.get("/", authUser, getChats);

@@ -8,6 +8,12 @@ const api = axios.create({
 });
 
 export const battleService = {
+  // Search Search Engine
+  searchChats: async (q, category) => {
+    const response = await api.get('/chats/search', { params: { q, category } });
+    return response.data;
+  },
+
   // Text Battle
   sendText: async (input) => {
     const response = await api.post('/battle', { input });
