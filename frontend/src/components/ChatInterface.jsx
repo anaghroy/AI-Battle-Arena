@@ -224,7 +224,7 @@ const ChatInterface = () => {
             })}
             {isLoading && (
               <div className="message ai-message">
-                <div className="message-content">Thinking...</div>
+                <div className="message-content">Generating...</div>
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -259,7 +259,7 @@ const ChatInterface = () => {
                   accept="audio/*,application/pdf,image/*"
                 />
                 <button type="button" onClick={handleFileClick} title="Add file">
-                  <Paperclip size={18} /> Add files
+                  <Paperclip size={18} /> <span style={{marginLeft: '0.5rem'}}>Add files</span>
                 </button>
                 <button 
                   type="button" 

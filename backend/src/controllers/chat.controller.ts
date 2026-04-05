@@ -81,7 +81,7 @@ export const syncChat = async (req: Request, res: Response): Promise<void> => {
       const firstUserMsg = messages.find((m: any) => m.type === "user");
       let title = "New Chat";
       if (firstUserMsg && firstUserMsg.text) {
-        title = firstUserMsg.text.length > 30 ? firstUserMsg.text.substring(0, 30) + '...' : firstUserMsg.text;
+        title = firstUserMsg.text.length > 10 ? firstUserMsg.text.substring(0, 10) + '...' : firstUserMsg.text;
       } else if (firstUserMsg && firstUserMsg.mode === "voice") {
         title = "Voice Session";
       } else if (firstUserMsg && firstUserMsg.mode === "pdf") {

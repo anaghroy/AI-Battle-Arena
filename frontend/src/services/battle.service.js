@@ -17,7 +17,7 @@ export const battleService = {
   // Voice Battle
   sendVoice: async (audioBlob) => {
     const formData = new FormData();
-    formData.append('audio', audioBlob, 'voice.webm'); // Ensure correct filename matching multer setup? Actually multer checks field name 'audio'
+    formData.append('audio', audioBlob, 'voice.webm'); 
     
     const response = await api.post('/battle/voice', formData, {
       headers: {
