@@ -6,10 +6,10 @@ import config from "../config/config.js";
 const genAI = new GoogleGenerativeAI(config.GEMINI_API_KEY!);
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-2.5-flash", // supports video
+  model: "gemini-2.5-flash",
 });
 
-// 🔽 Download video → buffer
+// Download video → buffer
 const downloadVideo = async (url: string): Promise<Buffer> => {
   const response = await axios.get(url, {
     responseType: "arraybuffer",
@@ -18,7 +18,7 @@ const downloadVideo = async (url: string): Promise<Buffer> => {
   return Buffer.from(response.data);
 };
 
-// 🎬 VIDEO → TEXT DESCRIPTION
+// VIDEO → TEXT DESCRIPTION
 export const describeVideo = async (videoUrl: string) => {
   try {
     console.log("Downloading video...");

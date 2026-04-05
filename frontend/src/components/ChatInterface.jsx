@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Paperclip, Mic, Image as ImageIcon, FileText, Send, SquareTerminal, CircleStop, Trophy } from 'lucide-react';
+import { Paperclip, Mic, Image as ImageIcon, FileText, Send, SquareTerminal, CircleStop, Trophy, Video } from 'lucide-react';
 import useBattleStore from '../store/battleStore';
 
 const ChatInterface = () => {
@@ -28,7 +28,7 @@ const ChatInterface = () => {
       if (!input.trim()) return;
       sendMessage(input);
       setInput('');
-    } else if (activeMode === 'image') {
+    } else if (activeMode === 'image' || activeMode === 'video') {
       if (!input.trim()) return;
       sendMessage(input);
       setInput('');
@@ -177,7 +177,12 @@ const ChatInterface = () => {
                               </div>
                             </div>
                           )}
-                          <ReactMarkdown components={MarkdownComponents}>{msg.data.solutionA?.text || ''}</ReactMarkdown>
+                          {msg.mode === 'video' && msg.data.solutionA?.videoUrl && (
+                            <div className="video-result model-video" style={{ marginBottom: '12px' }}>
+                              <video src={msg.data.solutionA.videoUrl} controls style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--border-color)', marginBottom: '8px'}} />
+                            </div>
+                          )}
+                          <ReactMarkdown components={MarkdownComponents}>{msg.data.solutionA?.description || msg.data.solutionA?.text || ''}</ReactMarkdown>
                         </div>
                       </div>
                       <div className="assistant-card">
@@ -194,7 +199,12 @@ const ChatInterface = () => {
                               </div>
                             </div>
                           )}
-                          <ReactMarkdown components={MarkdownComponents}>{msg.data.solutionB?.text || ''}</ReactMarkdown>
+                          {msg.mode === 'video' && msg.data.solutionB?.videoUrl && (
+                            <div className="video-result model-video" style={{ marginBottom: '12px' }}>
+                              <video src={msg.data.solutionB.videoUrl} controls style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--border-color)', marginBottom: '8px'}} />
+                            </div>
+                          )}
+                          <ReactMarkdown components={MarkdownComponents}>{msg.data.solutionB?.description || msg.data.solutionB?.text || ''}</ReactMarkdown>
                         </div>
                       </div>
                     </div>
@@ -235,6 +245,11 @@ const ChatInterface = () => {
                        <div className="file-preview-card">
                          <Mic size={20} className="file-icon" style={{ color: '#3b82f6' }} />
                          <span className="file-name">{msg.text.replace('🎙️ ', '')}</span>
+                       </div>
+                     ) : msg.type === 'user' && msg.mode === 'video' ? (
+                       <div className="file-preview-card">
+                         <Video size={20} className="file-icon" style={{ color: '#a855f7' }} />
+                         <span className="file-name">{msg.text.replace('Generating video for: ', '')}</span>
                        </div>
                      ) : msg.mode === 'image' && msg.type === 'ai' ? (
                        <img src={msg.text} alt="AI Generated" style={{maxWidth: '100%', borderRadius: '8px'}} />
@@ -302,6 +317,14 @@ const ChatInterface = () => {
                   className={activeMode === 'image' ? 'active-mode-btn' : ''}
                 >
                   <ImageIcon size={18} />
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => switchMode('video')} 
+                  title="Video Generation Mode"
+                  className={activeMode === 'video' ? 'active-mode-btn' : ''}
+                >
+                  <Video size={18} />
                 </button>
                 <button 
                   type="button" 

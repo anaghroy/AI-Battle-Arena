@@ -5,7 +5,6 @@ import {
   Trophy,
   Search,
   X,
-  PanelLeftClose,
   Trash2,
 } from "lucide-react";
 import useAuthStore from "../store/authStore";

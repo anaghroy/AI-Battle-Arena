@@ -18,6 +18,21 @@ const getPexelsVideo = async (query: string): Promise<string> => {
     });
 
     const video = res.data.videos[0];
+    if (!video) {
+        console.warn(`No video found on Pexels for query: "${query}". Falling back to generic query...`);
+        // Fallback to a single generic keyword
+        const keywords = query.split(' ').filter(w => w.length > 3);
+        const fallbackQuery = keywords.length > 0 ? keywords[keywords.length - 1] : "technology";
+        
+        const fallbackRes = await axios.get(PEXELS_URL, {
+            headers: { Authorization: config.PEXELS_API_KEY },
+            params: { query: fallbackQuery, per_page: 1 }
+        });
+        if (!fallbackRes.data.videos[0]) {
+             return "https://cdn.pixabay.com/vimeo/32894014/technology-23588.mp4?width=1280&hash=648675ba319e7a96ef55fa4acaf6dc0808ac6379"; // default reliable MP4 fallback
+        }
+        return fallbackRes.data.videos[0].video_files[0].link;
+    }
 
     return video.video_files[0].link; // direct video URL
   } catch (error) {

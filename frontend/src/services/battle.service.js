@@ -39,6 +39,12 @@ export const battleService = {
     return response.data;
   },
 
+  // Video Battle
+  sendVideo: async (input) => {
+    const response = await api.post('/battle/video', { input });
+    return response.data;
+  },
+
   // PDF Battle
   sendPdf: async (pdfFile) => {
     const formData = new FormData();
