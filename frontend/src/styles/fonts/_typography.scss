@@ -19,6 +19,10 @@
   font-family: bold;
   src: url(../../assets/fonts/PlayfairDisplay-Bold.ttf);
 }
+@font-face {
+  font-family: inter-bold;
+  src: url(../../assets/fonts/Inter-Bold.otf);
+}
 
 @font-face {
   font-family: semi-bold;
@@ -31,5 +35,6 @@
   --font-medium: "medium", sans-serif;
   --font-italic: "italic", sans-serif;
   --font-bold: "bold", sans-serif;
+  --font-inter-bold: "inter-bold", sans-serif;
   --font-semi-bold: "semi-bold", sans-serif;
 }

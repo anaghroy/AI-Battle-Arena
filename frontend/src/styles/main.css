@@ -55,6 +55,10 @@ body {
   src: url(../../assets/fonts/PlayfairDisplay-Bold.ttf);
 }
 @font-face {
+  font-family: inter-bold;
+  src: url(../../assets/fonts/Inter-Bold.otf);
+}
+@font-face {
   font-family: semi-bold;
   src: url(../../assets/fonts/PlayfairDisplay-SemiBold.ttf);
 }
@@ -64,6 +68,7 @@ body {
   --font-medium: "medium", sans-serif;
   --font-italic: "italic", sans-serif;
   --font-bold: "bold", sans-serif;
+  --font-inter-bold: "inter-bold", sans-serif;
   --font-semi-bold: "semi-bold", sans-serif;
 }
 
@@ -744,7 +749,7 @@ body.light-theme {
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.85rem;
-  font-family: var(--font-bold);
+  font-family: var(--font-inter-bold);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -764,7 +769,7 @@ body.light-theme {
 }
 .chat-container .chat-messages .battle-message-wrapper .verdict-panel .verdict-header .scores-container .score-badge span {
   color: var(--text-primary);
-  font-family: var(--font-bold);
+  font-family: var(--font-inter-bold);
   margin-left: 4px;
 }
 .chat-container .chat-messages .battle-message-wrapper .verdict-panel .verdict-reasoning {
@@ -824,21 +829,38 @@ body.light-theme {
   margin-bottom: 4px;
 }
 .chat-container .chat-messages .markdown-body pre {
-  background-color: #1a1a1a;
-  padding: 16px;
+  padding: 0;
   border-radius: 8px;
   overflow-x: auto;
   margin-bottom: 16px;
   border: 1px solid var(--border-color);
+  /* Apply custom 5px horizontal scrollbar styling per user request */
+}
+.chat-container .chat-messages .markdown-body pre::-webkit-scrollbar {
+  height: 5px;
+}
+.chat-container .chat-messages .markdown-body pre::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+.chat-container .chat-messages .markdown-body pre::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+.chat-container .chat-messages .markdown-body pre::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.5);
 }
 .chat-container .chat-messages .markdown-body pre code {
   background-color: transparent;
   padding: 0;
-  color: #e5e5e5;
+  color: inherit;
+}
+.chat-container .chat-messages .markdown-body {
+  /* Inline code block styling */
 }
 .chat-container .chat-messages .markdown-body code {
   font-family: "Courier New", Courier, monospace;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.08);
   padding: 0.2em 0.4em;
   border-radius: 6px;
   font-size: 0.85em;
@@ -957,17 +979,18 @@ body.light-theme {
 }
 
 .voice-recorder-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(5px);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 50vh;
+  width: 50vw;
+  background-color: rgba(51, 49, 49, 0.5);
+  border-radius: 1rem;
 }
 .voice-recorder-overlay .voice-recorder-popup {
   background-color: var(--bg-card);

@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import battleRouter from "./routes/battle.route.js";
 import authRouter from "./routes/auth.routes.js";
 import chatRouter from "./routes/chat.route.js";
+import leaderboardRouter from "./routes/leaderboard.route.js";
 const app = express();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/api/auth", authRouter);
 app.use("/api/battle", battleRouter);
 app.use("/api/chats", chatRouter);
+app.use("/api/leaderboard", leaderboardRouter);
 
 app.get("/heath", (req, res) => {
   res.json({ message: "Server is running" });
