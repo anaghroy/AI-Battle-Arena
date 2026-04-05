@@ -3,4 +3,6 @@
 @use "../styles/colors/variables";
 
 /*Layouts*/
-@use "../styles/components/auth"
+@use "../styles/components/auth";
+@use "../styles/components/dashboard";
+@use "../styles/components/chat";

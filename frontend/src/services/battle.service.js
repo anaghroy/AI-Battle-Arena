@@ -1,0 +1,48 @@
+import axios from 'axios';
+
+const API_URL = 'http://localhost:3000/api';
+
+const api = axios.create({
+  baseURL: API_URL,
+  withCredentials: true,
+});
+
+export const battleService = {
+  // Text Battle
+  sendText: async (input) => {
+    const response = await api.post('/battle', { input });
+    return response.data;
+  },
+
+  // Voice Battle
+  sendVoice: async (audioBlob) => {
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'voice.webm'); // Ensure correct filename matching multer setup? Actually multer checks field name 'audio'
+    
+    const response = await api.post('/battle/voice', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  // Image Battle
+  sendImage: async (prompt) => {
+    const response = await api.post('/battle/image', { prompt });
+    return response.data;
+  },
+
+  // PDF Battle
+  sendPdf: async (pdfFile) => {
+    const formData = new FormData();
+    formData.append('file', pdfFile);
+
+    const response = await api.post('/battle/pdf', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+};

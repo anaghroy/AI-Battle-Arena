@@ -90,7 +90,7 @@ const LoginPage = () => {
 
       <SocialLogin />
 
-      <div className="auth-footer-simple" style={{ marginTop: '2.5rem', textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
+      <div className="auth-footer-simple" style={{ marginTop: '2.5rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
         © 2026 GEN AI LAB. ALL RIGHTS RESERVED.
       </div>
     </AuthLayout>
