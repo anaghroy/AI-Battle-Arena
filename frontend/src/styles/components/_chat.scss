@@ -70,7 +70,7 @@
         display: flex;
         gap: 20px;
         width: 100%;
-        max-width: 1000px;
+        max-width: 1100px;
         
         .assistant-card {
           flex: 1;
@@ -233,23 +233,39 @@
       }
 
       pre {
-        background-color: #1a1a1a;
-        padding: 16px;
+        padding: 0;
         border-radius: 8px;
         overflow-x: auto;
         margin-bottom: 16px;
         border: 1px solid var(--border-color);
 
+        /* Apply custom 5px horizontal scrollbar styling per user request */
+        &::-webkit-scrollbar {
+          height: 5px;
+        }
+        &::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 4px;
+        }
+        &::-webkit-scrollbar-thumb {
+          background-color: rgba(255, 255, 255, 0.3);
+          border-radius: 4px;
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+          }
+        }
+
         code {
           background-color: transparent;
           padding: 0;
-          color: #e5e5e5;
+          color: inherit;
         }
       }
 
+      /* Inline code block styling */
       code {
         font-family: 'Courier New', Courier, monospace;
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: rgba(255, 255, 255, 0.08);
         padding: 0.2em 0.4em;
         border-radius: 6px;
         font-size: 0.85em;

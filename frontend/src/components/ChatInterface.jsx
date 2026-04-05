@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Paperclip, Mic, Image as ImageIcon, FileText, Send, SquareTerminal, CircleStop, Trophy } from 'lucide-react';
 import useBattleStore from '../store/battleStore';
 
@@ -124,6 +126,27 @@ const ChatInterface = () => {
 
   const isInitialState = messages.length === 0;
 
+  const MarkdownComponents = {
+    code({inline, className, children, ...props}) {
+      const match = /language-(\w+)/.exec(className || '');
+      return !inline && match ? (
+        <SyntaxHighlighter
+          style={vscDarkPlus}
+          language={match[1]}
+          PreTag="div"
+          customStyle={{ margin: '16px 0', border: '1px solid var(--border-color)', borderRadius: '8px', overflowX: 'auto', background: '#1e1e1e' }}
+          {...props}
+        >
+          {String(children).replace(/\n$/, '')}
+        </SyntaxHighlighter>
+      ) : (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      )
+    }
+  };
+
   return (
     <>
       <div className={`chat-container ${isInitialState ? 'centered-layout' : ''}`}>
@@ -154,7 +177,7 @@ const ChatInterface = () => {
                               </div>
                             </div>
                           )}
-                          <ReactMarkdown>{msg.data.solutionA?.text || ''}</ReactMarkdown>
+                          <ReactMarkdown components={MarkdownComponents}>{msg.data.solutionA?.text || ''}</ReactMarkdown>
                         </div>
                       </div>
                       <div className="assistant-card">
@@ -171,7 +194,7 @@ const ChatInterface = () => {
                               </div>
                             </div>
                           )}
-                          <ReactMarkdown>{msg.data.solutionB?.text || ''}</ReactMarkdown>
+                          <ReactMarkdown components={MarkdownComponents}>{msg.data.solutionB?.text || ''}</ReactMarkdown>
                         </div>
                       </div>
                     </div>
@@ -216,7 +239,7 @@ const ChatInterface = () => {
                      ) : msg.mode === 'image' && msg.type === 'ai' ? (
                        <img src={msg.text} alt="AI Generated" style={{maxWidth: '100%', borderRadius: '8px'}} />
                      ) : (
-                       msg.type === 'ai' ? <ReactMarkdown className="markdown-body">{msg.text}</ReactMarkdown> : msg.text
+                       msg.type === 'ai' ? <ReactMarkdown className="markdown-body" components={MarkdownComponents}>{msg.text}</ReactMarkdown> : msg.text
                      )}
                    </div>
                 </div>

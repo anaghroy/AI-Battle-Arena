@@ -162,68 +162,70 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               gap: "8px",
             }}
           >
-            {history.map((chat) => (
-              <li
-                key={chat._id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <button
-                  onClick={() => handleLoadChat(chat._id)}
+            {history.map((chat) => {
+              const isActive = currentChatId === chat._id;
+              return (
+                <li
+                  key={chat._id}
                   style={{
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    textAlign: "left",
-                    color:
-                      currentChatId === chat._id
-                        ? "var(--text-primary)"
-                        : "var(--text-secondary)",
-                    fontSize: "0.85rem",
-                    flex: 1,
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    transition: "color 0.2s",
-                    padding: "6px 0",
-                    fontFamily: "var(--font-inter-regular)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "6px 12px",
+                    borderRadius: "8px",
+                    background: isActive ? "var(--bg-tertiary)" : "transparent",
+                    transition: "all 0.2s ease-in-out",
+                    border: isActive ? "1px solid var(--border-color)" : "1px solid transparent",
                   }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.color = "var(--text-primary)")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.color =
-                      currentChatId === chat._id
-                        ? "var(--text-primary)"
-                        : "var(--text-secondary)")
-                  }
-                >
-                  {chat.title}
-                </button>
-                <button
-                  onClick={(e) => handleDeleteChat(e, chat._id)}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    color: "var(--text-secondary)",
-                    padding: "4px",
+                  onMouseEnter={(e) => {
+                    if (!isActive) e.currentTarget.style.background = "var(--bg-hover)";
                   }}
-                  title="Delete Chat"
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.color = "#ef4444")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.color = "var(--text-secondary)")
-                  }
+                  onMouseLeave={(e) => {
+                    if (!isActive) e.currentTarget.style.background = "transparent";
+                  }}
                 >
-                  <Trash2 size={16} />
-                </button>
-              </li>
-            ))}
+                  <button
+                    onClick={() => handleLoadChat(chat._id)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      textAlign: "left",
+                      color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
+                      fontSize: "0.85rem",
+                      flex: 1,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      fontFamily: "var(--font-inter-regular)",
+                      fontWeight: isActive ? "500" : "normal",
+                    }}
+                  >
+                    {chat.title}
+                  </button>
+                  <button
+                    onClick={(e) => handleDeleteChat(e, chat._id)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "var(--text-secondary)",
+                      padding: "4px",
+                      opacity: isActive ? 1 : 0.6,
+                    }}
+                    title="Delete Chat"
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.color = "#ef4444")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.color = "var(--text-secondary)")
+                    }
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>

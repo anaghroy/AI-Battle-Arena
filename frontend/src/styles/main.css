@@ -80,6 +80,7 @@ body {
   --bg-card: #202020;
   --bg-panel: #222222;
   --bg-hover: #2a2a2a;
+  --bg-tertiary: #333333;
   --text-primary: #ffffff;
   --text-secondary: #a1a1aa;
   --accent-primary: #e0b07b;
@@ -97,6 +98,7 @@ body.light-theme {
   --bg-card: #ffffff;
   --bg-panel: #e5e7eb;
   --bg-hover: #d1d5db;
+  --bg-tertiary: #d1d5db;
   --text-primary: #111827;
   --text-secondary: #4b5563;
   --accent-primary: #d97706;
@@ -679,7 +681,7 @@ body.light-theme {
   display: flex;
   gap: 20px;
   width: 100%;
-  max-width: 1000px;
+  max-width: 1100px;
 }
 .chat-container .chat-messages .battle-message-wrapper .battle-panel .assistant-card {
   flex: 1;
