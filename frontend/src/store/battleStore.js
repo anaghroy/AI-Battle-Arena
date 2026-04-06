@@ -3,6 +3,7 @@ import { battleService } from "../services/battle.service";
 
 const useBattleStore = create((set, get) => ({
   messages: [],
+  freshMessageIds: new Set(),
   currentChatId: null,
   history: [],
   isLoading: false,
@@ -18,9 +19,10 @@ const useBattleStore = create((set, get) => ({
     };
     set((state) => {
       const updatedMessages = [...state.messages, newMessage];
+      const updatedFresh = new Set(state.freshMessageIds).add(newMessage.id);
       // Async sync without blocking UI
       get().syncCurrentChat(updatedMessages);
-      return { messages: updatedMessages };
+      return { messages: updatedMessages, freshMessageIds: updatedFresh };
     });
   },
 
@@ -101,8 +103,9 @@ const useBattleStore = create((set, get) => ({
 
       set((state) => {
         const msgs = [...state.messages, userMsg];
+        const updatedFresh = new Set(state.freshMessageIds).add(userMsgId);
         get().syncCurrentChat(msgs);
-        return { messages: msgs };
+        return { messages: msgs, freshMessageIds: updatedFresh };
       });
 
       let responseData = null;

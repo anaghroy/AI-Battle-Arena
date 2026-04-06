@@ -20,6 +20,7 @@
     "react-router-dom": "^7.14.0",
     "react-syntax-highlighter": "^16.1.1",
     "react-toastify": "^11.0.5",
+    "remark-gfm": "^4.0.1",
     "sass-embedded": "^1.99.0",
     "zustand": "^5.0.12"
   },

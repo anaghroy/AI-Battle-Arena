@@ -5,6 +5,7 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Paperclip, Mic, Image as ImageIcon, FileText, Send, SquareTerminal, CircleStop, Trophy, Video, Volume2, VolumeX } from 'lucide-react';
 import useBattleStore from '../store/battleStore';
 import { stopSpeaking, playIndividual } from '../utils/tts';
+import TokenVisualizer from './TokenVisualizer';
 
 const AudioPlayer = ({ textToSpeak, personality }) => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -50,7 +51,7 @@ const ChatInterface = () => {
   const [input, setInput] = useState('');
   const [file, setFile] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
-  const { messages, isLoading, activeMode, setActiveMode, sendMessage } = useBattleStore();
+  const { messages, isLoading, activeMode, setActiveMode, sendMessage, freshMessageIds } = useBattleStore();
   
   const fileInputRef = useRef(null);
   const messagesEndRef = useRef(null);
@@ -224,7 +225,7 @@ const ChatInterface = () => {
                               <video src={msg.data.solutionA.videoUrl} controls style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--border-color)', marginBottom: '8px'}} />
                             </div>
                           )}
-                          <ReactMarkdown components={MarkdownComponents}>{msg.data.solutionA?.description || msg.data.solutionA?.text || ''}</ReactMarkdown>
+                          <TokenVisualizer msgId={`${msg.id}-A`} text={msg.data.solutionA?.description || msg.data.solutionA?.text || ''} isNew={freshMessageIds?.has(msg.id)} />
                         </div>
                       </div>
                       <div className="assistant-card">
@@ -247,7 +248,7 @@ const ChatInterface = () => {
                               <video src={msg.data.solutionB.videoUrl} controls style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--border-color)', marginBottom: '8px'}} />
                             </div>
                           )}
-                          <ReactMarkdown components={MarkdownComponents}>{msg.data.solutionB?.description || msg.data.solutionB?.text || ''}</ReactMarkdown>
+                          <TokenVisualizer msgId={`${msg.id}-B`} text={msg.data.solutionB?.description || msg.data.solutionB?.text || ''} isNew={freshMessageIds?.has(msg.id)} />
                         </div>
                       </div>
                     </div>
