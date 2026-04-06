@@ -11,6 +11,7 @@ type AppConfig = {
   readonly NVIDIA_API_KEY: string;
   readonly SHOTSTACK_API_KEY: string;
   readonly PEXELS_API_KEY: string;
+  readonly HYPEREAL_API_KEY: string;
   readonly BREVO_SENDER_EMAIL: string;
   readonly BREVO_API_KEY: string;
   readonly GOOGLE_CLIENT_SECRET: string;
@@ -35,6 +36,7 @@ const config: AppConfig = {
   NVIDIA_API_KEY: process.env.NVIDIA_API_KEY as string,
   SHOTSTACK_API_KEY: process.env.SHOTSTACK_API_KEY as string,
   PEXELS_API_KEY: process.env.PEXELS_API_KEY as string,
+  HYPEREAL_API_KEY: process.env.HYPEREAL_API_KEY as string,
   BREVO_SENDER_EMAIL: process.env.BREVO_SENDER_EMAIL as string,
   BREVO_API_KEY: process.env.BREVO_API_KEY as string,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET as string,

@@ -8,6 +8,7 @@ import DashboardPage from './pages/DashboardPage'
 import LeaderboardPage from './pages/LeaderboardPage'
 import SearchPage from './pages/SearchPage'
 import useAuthStore from './store/authStore'
+import { loadVoices } from './utils/tts'
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuthStore();
@@ -20,6 +21,7 @@ const App = () => {
 
   useEffect(() => {
     checkAuth();
+    loadVoices();
   }, [checkAuth]);
 
   if (isCheckingAuth) {

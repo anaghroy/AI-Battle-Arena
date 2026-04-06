@@ -100,8 +100,8 @@ const useAuthStore = create((set) => ({
     set({ isLoading: true, error: null });
     try {
       const endpoint = provider === 'google' ? '/auth/google' : '/auth/github';
-      // Adjust payload depending on what backend expects (token or code)
-      const payload = provider === 'google' ? { token: tokenOrCode } : { code: tokenOrCode };
+      // Both backend routes expect { code } in the request body
+      const payload = { code: tokenOrCode };
       
       const response = await api.post(endpoint, payload);
       
@@ -112,6 +112,7 @@ const useAuthStore = create((set) => ({
       });
       return true;
     } catch (error) {
+      console.error("SOCIAL LOGIN ERROR:", error.response?.data || error.message);
       set({ 
         error: error.response?.data?.message || `${provider} login failed`, 
         isLoading: false 

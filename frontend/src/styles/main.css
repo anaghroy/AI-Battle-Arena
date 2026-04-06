@@ -219,7 +219,7 @@ body.light-theme {
 }
 .auth-header p {
   color: var(--text-secondary);
-  font-family: var(--font-regular);
+  font-family: var(--font-inter-regular);
   font-size: 1.05rem;
   line-height: 1.5;
 }
@@ -260,6 +260,7 @@ body.light-theme {
 .input-group .label-container .forgot-password {
   font-size: 0.7rem;
   color: var(--text-secondary);
+  font-family: var(--font-inter-regular);
   text-decoration: none;
   text-transform: uppercase;
   font-weight: 600;
@@ -290,7 +291,7 @@ body.light-theme {
   font-size: 0.95rem;
   outline: none;
   transition: background-color 0.3s ease, border-color 0.3s ease;
-  font-family: var(--font-regular);
+  font-family: var(--font-inter-regular);
 }
 .input-group .input-wrapper input.has-icon {
   padding-left: 3rem;
@@ -312,7 +313,7 @@ body.light-theme {
   color: var(--text-secondary);
   border-radius: 8px;
   font-size: 1rem;
-  font-family: var(--font-medium);
+  font-family: var(--font-inter-regular);
   cursor: pointer;
   outline: none;
   border: none;
@@ -343,6 +344,7 @@ body.light-theme {
 .auth-divider span {
   padding: 0 1rem;
   color: var(--text-secondary);
+  font-family: var(--font-inter-regular);
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -724,6 +726,15 @@ body.light-theme {
   padding: 20px;
   overflow-y: auto;
   max-height: 500px;
+}
+.chat-container .chat-messages .battle-message-wrapper .battle-panel .assistant-card .card-content .video-result {
+  width: 100%;
+}
+.chat-container .chat-messages .battle-message-wrapper .battle-panel .assistant-card .card-content .video-result video {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 .chat-container .chat-messages .battle-message-wrapper .verdict-panel {
   width: 100%;

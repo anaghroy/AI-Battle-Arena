@@ -372,10 +372,14 @@ export const googleAuth = async (
         email: user.email,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Google Auth Error:", error);
+    try {
+      require("fs").writeFileSync("google_error_log.txt", String(error.message || error) + "\n" + (error.response?.data ? JSON.stringify(error.response.data) : ""));
+    } catch (e) {}
     res.status(401).json({
       message: "Google authentication failed",
+      error: error?.message || String(error)
     });
   }
 };
@@ -394,12 +398,14 @@ export const githubAuth = async (
     }
 
     // Step 1: Get access token
+    const frontendUrl = config.FRONTEND_URL || "http://localhost:5173";
     const tokenRes = await axios.post(
       "https://github.com/login/oauth/access_token",
       {
         client_id: config.GITHUB_CLIENT_ID,
         client_secret: config.GITHUB_CLIENT_SECRET,
         code,
+        redirect_uri: `${frontendUrl}/login`,
       },
       {
         headers: {
@@ -504,9 +510,14 @@ export const githubAuth = async (
     });
   } catch (error: any) {
     console.error("GitHub Auth Error:", error.response?.data || error.message);
+    try {
+      require("fs").writeFileSync("github_error_log.txt", String(error.message || error) + "\n" + (error.response?.data ? JSON.stringify(error.response.data) : ""));
+    } catch (e) {}
 
     res.status(500).json({
       message: "GitHub authentication failed",
+      error: error?.message || String(error),
+      details: error.response?.data
     });
   }
 };

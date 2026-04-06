@@ -92,10 +92,7 @@ export const imageBattle = async (
 };
 
 // PDF BATTLE
-export const pdfBattle = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const pdfBattle = async (req: Request, res: Response): Promise<void> => {
   try {
     const file = req.file;
 

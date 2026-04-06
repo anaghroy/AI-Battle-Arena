@@ -2,8 +2,49 @@ import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Paperclip, Mic, Image as ImageIcon, FileText, Send, SquareTerminal, CircleStop, Trophy, Video } from 'lucide-react';
+import { Paperclip, Mic, Image as ImageIcon, FileText, Send, SquareTerminal, CircleStop, Trophy, Video, Volume2, VolumeX } from 'lucide-react';
 import useBattleStore from '../store/battleStore';
+import { stopSpeaking, playIndividual } from '../utils/tts';
+
+const AudioPlayer = ({ textToSpeak, personality }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      stopSpeaking();
+    };
+  }, []);
+
+  const togglePlay = () => {
+    if (isPlaying) {
+      stopSpeaking();
+      setIsPlaying(false);
+    } else {
+      stopSpeaking();
+      setIsPlaying(true);
+      playIndividual(textToSpeak, personality).then(() => {
+        setIsPlaying(false);
+      });
+    }
+  };
+
+  if (!textToSpeak) return null;
+
+  return (
+    <button 
+      onClick={togglePlay}
+      type="button"
+      style={{
+        background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', borderRadius: '6px', 
+        padding: '6px', color: isPlaying ? '#41BE4B' : 'var(--text-secondary)', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center'
+      }}
+      title={isPlaying ? "Stop" : "Listen"}
+    >
+      {isPlaying ? <Volume2 size={16} color="#41BE4B" /> : <VolumeX size={16} />}
+    </button>
+  );
+};
 
 const ChatInterface = () => {
   const [input, setInput] = useState('');
@@ -164,8 +205,9 @@ const ChatInterface = () => {
                   <div key={msg.id} className="battle-message-wrapper">
                     <div className="battle-panel">
                       <div className="assistant-card">
-                        <div className="card-header">
+                        <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                           <div className="assistant-title"><span className="circle-icon"></span> Assistant A</div>
+                          {['voice', 'text', 'pdf'].includes(msg.mode) && <AudioPlayer textToSpeak={typeof msg.data.solutionA === 'string' ? msg.data.solutionA : (msg.data.solutionA?.description || msg.data.solutionA?.text)} personality="serious" />}
                         </div>
                         <div className="card-content markdown-body">
                           {msg.mode === 'image' && msg.data.solutionA?.imageUrl && (
@@ -186,8 +228,9 @@ const ChatInterface = () => {
                         </div>
                       </div>
                       <div className="assistant-card">
-                        <div className="card-header">
+                        <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                           <div className="assistant-title"><span className="circle-icon"></span> Assistant B</div>
+                          {['voice', 'text', 'pdf'].includes(msg.mode) && <AudioPlayer textToSpeak={typeof msg.data.solutionB === 'string' ? msg.data.solutionB : (msg.data.solutionB?.description || msg.data.solutionB?.text)} personality="energetic" />}
                         </div>
                         <div className="card-content markdown-body">
                           {msg.mode === 'image' && msg.data.solutionB?.imageUrl && (
@@ -239,12 +282,12 @@ const ChatInterface = () => {
                      {msg.type === 'user' && msg.mode === 'pdf' ? (
                        <div className="file-preview-card">
                          <FileText size={20} className="file-icon" style={{ color: '#ef4444' }} />
-                         <span className="file-name">{msg.text.replace('📄 Analyzing PDF: ', '')}</span>
+                         <span className="file-name">{msg.text.replace('Analyzing PDF: ', '')}</span>
                        </div>
                      ) : msg.type === 'user' && msg.mode === 'voice' ? (
                        <div className="file-preview-card">
                          <Mic size={20} className="file-icon" style={{ color: '#3b82f6' }} />
-                         <span className="file-name">{msg.text.replace('🎙️ ', '')}</span>
+                         <span className="file-name">{msg.text.replace('Generating voice for: ', '')}</span>
                        </div>
                      ) : msg.type === 'user' && msg.mode === 'video' ? (
                        <div className="file-preview-card">

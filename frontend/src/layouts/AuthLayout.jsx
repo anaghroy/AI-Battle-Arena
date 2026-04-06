@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import logo from "../assets/images/sword-line.png"
 
 const AuthLayout = ({ children, bgImage, secondaryText, linkText, linkTo, badgeText, quoteTitle, quoteDesc }) => {
   return (
@@ -18,8 +18,8 @@ const AuthLayout = ({ children, bgImage, secondaryText, linkText, linkTo, badgeT
         />
         
         {/* App Logo/Header overlay top left */}
-        <div style={{ position: 'absolute', top: '2rem', left: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff', fontSize: '1.25rem', fontFamily: 'var(--font-bold)' }}>
-          Gen AI
+        <div style={{ position: 'absolute', top: '2rem', left: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff' }}>
+          <img src={logo} alt='logo' width={80} height={80} />
         </div>
 
         {/* Dynamic Overlay Text */}

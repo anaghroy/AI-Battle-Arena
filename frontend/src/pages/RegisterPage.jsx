@@ -100,7 +100,7 @@ const RegisterPage = () => {
 
       <SocialLogin />
 
-      <div className="auth-footer-simple" style={{ marginTop: '2.5rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+      <div className="auth-footer-simple" style={{ marginTop: '2.5rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-inter-regular)' }}>
         By signing up, you agree to our <a href="#" style={{ color: 'var(--text-secondary)' }}>Terms of Service</a> and <a href="#" style={{ color: 'var(--text-secondary)' }}>Privacy Policy</a>.
       </div>
 

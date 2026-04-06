@@ -10,7 +10,6 @@ import { generateSummaryA, generateSummaryB } from "./model.service.js";
 import { uploadPdfToImageKit } from "./image.service.js";
 import { extractPdfText } from "./pdf.service.js";
 import { generateVideoBattle } from "./video.service.js";
-// import { extractFrames } from "./video-frame.service.js";
 import { describeVideo } from "./video-caption.service.js";
 
 type BattleType = "text" | "image" | "pdf" | "video";

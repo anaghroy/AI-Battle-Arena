@@ -4,13 +4,13 @@ import type { JwtPayload } from "jsonwebtoken";
 import config from "../config/config.js";
 import { redisClient } from "../config/redis.js";
 
-// ✅ Define your JWT payload shape
+// Define your JWT payload shape
 interface IUserPayload extends JwtPayload {
   id: string;
   username: string;
 }
 
-// ✅ Extend Request
+// Extend Request
 export interface AuthRequest extends Request {
   user?: IUserPayload;
 }
