@@ -4,7 +4,8 @@ services:
     env: docker
     plan: free
     dockerContext: .
-    dockerFilePath: Dockerfile
+    dockerfilePath: ./Dockerfile
+    branch: main
     autoDeploy: true
     envVars:
       - key: PORT
