@@ -20,6 +20,5 @@
 **/.idea
 
 # Docker files themselves
-Dockerfile
 .dockerignore
 docker-compose*.yml
