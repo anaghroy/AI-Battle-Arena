@@ -13,7 +13,7 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === "production"
-        ? process.env.FRONTEND_URL
+        ? process.env.FRONTEND_URL || true
         : "http://localhost:5173",
     credentials: true,
   }),
