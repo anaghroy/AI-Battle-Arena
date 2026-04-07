@@ -40,10 +40,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     const emailVerificationToken = jwt.sign(
       { email: user.email },
-      process.env.JWT_SECRET as string,
+      config.JWT_SECRET,
     );
 
-    const backendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    const backendUrl = config.FRONTEND_URL || "http://localhost:3000";
 
     await sendEmail({
       to: email,
@@ -110,7 +110,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
   const token = jwt.sign(
     { id: user._id, username: user.username },
-    process.env.JWT_SECRET as string,
+    config.JWT_SECRET,
     { expiresIn: "3d" },
   );
 
@@ -168,7 +168,7 @@ export const verifyEmail = async (
   try {
     const decoded = jwt.verify(
       token as string,
-      config.JWT_SECRET as string,
+      config.JWT_SECRET,
     ) as JwtPayload;
 
     const user = await userModel.findOne({ email: decoded.email });
@@ -194,7 +194,6 @@ export const verifyEmail = async (
 /**
  * Logout
  */
-
 
 export const logout = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -263,10 +262,7 @@ export const resendVerificationEmail = async (
       return;
     }
 
-    const token = jwt.sign(
-      { email: user.email },
-      config.JWT_SECRET as string,
-    );
+    const token = jwt.sign({ email: user.email }, config.JWT_SECRET);
 
     const backendUrl = config.FRONTEND_URL || "http://localhost:3000";
 
@@ -331,7 +327,7 @@ export const googleAuth = async (
     const picture = payload.picture;
 
     const username: string =
-      typeof name === "string" ? name : email.split("@")[0];
+      typeof name === "string" ? name : email.split("@")[0] || "user";
 
     const googleId: string | null = typeof sub === "string" ? sub : null;
 
@@ -353,7 +349,7 @@ export const googleAuth = async (
 
     const token = jwt.sign(
       { id: user._id, username: user.username },
-      config.JWT_SECRET as string,
+      config.JWT_SECRET,
       { expiresIn: "3d" },
     );
 
@@ -375,15 +371,19 @@ export const googleAuth = async (
   } catch (error: any) {
     console.error("Google Auth Error:", error);
     try {
-      require("fs").writeFileSync("google_error_log.txt", String(error.message || error) + "\n" + (error.response?.data ? JSON.stringify(error.response.data) : ""));
+      require("fs").writeFileSync(
+        "google_error_log.txt",
+        String(error.message || error) +
+          "\n" +
+          (error.response?.data ? JSON.stringify(error.response.data) : ""),
+      );
     } catch (e) {}
     res.status(401).json({
       message: "Google authentication failed",
-      error: error?.message || String(error)
+      error: error?.message || String(error),
     });
   }
 };
-
 
 export const githubAuth = async (
   req: Request,
@@ -431,14 +431,11 @@ export const githubAuth = async (
     const githubUser = userRes.data;
 
     // Step 3: Get email (IMPORTANT)
-    const emailRes = await axios.get(
-      "https://api.github.com/user/emails",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
+    const emailRes = await axios.get("https://api.github.com/user/emails", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
       },
-    );
+    });
 
     const primaryEmailObj = emailRes.data.find(
       (e: any) => e.primary && e.verified,
@@ -458,14 +455,10 @@ export const githubAuth = async (
         : email.split("@")[0];
 
     const githubId: string =
-      typeof githubUser.id === "number"
-        ? String(githubUser.id)
-        : "";
+      typeof githubUser.id === "number" ? String(githubUser.id) : "";
 
     const picture: string | null =
-      typeof githubUser.avatar_url === "string"
-        ? githubUser.avatar_url
-        : null;
+      typeof githubUser.avatar_url === "string" ? githubUser.avatar_url : null;
 
     // Step 4: Find or create user
     let user = await userModel.findOne({ email });
@@ -484,11 +477,10 @@ export const githubAuth = async (
     user.provider = "github";
     await user.save();
 
-
     // Step 5: Generate JWT
     const token = jwt.sign(
       { id: user._id.toString(), username: user.username },
-      config.JWT_SECRET as string,
+      config.JWT_SECRET,
       { expiresIn: "3d" },
     );
 
@@ -511,13 +503,18 @@ export const githubAuth = async (
   } catch (error: any) {
     console.error("GitHub Auth Error:", error.response?.data || error.message);
     try {
-      require("fs").writeFileSync("github_error_log.txt", String(error.message || error) + "\n" + (error.response?.data ? JSON.stringify(error.response.data) : ""));
+      require("fs").writeFileSync(
+        "github_error_log.txt",
+        String(error.message || error) +
+          "\n" +
+          (error.response?.data ? JSON.stringify(error.response.data) : ""),
+      );
     } catch (e) {}
 
     res.status(500).json({
       message: "GitHub authentication failed",
       error: error?.message || String(error),
-      details: error.response?.data
+      details: error.response?.data,
     });
   }
 };

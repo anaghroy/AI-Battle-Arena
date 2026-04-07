@@ -1,12 +1,12 @@
 export type BattleState = {
-  userInput: String;
+  userInput: string;
 
-  solutionA?: String;
-  solutionB?: String;
+  solutionA?: string;
+  solutionB?: string;
 
   verdict?: {
-    winner: String;
-    reasoning: String;
+    winner: string;
+    reasoning: string;
     scores: {
       A: number;
       B: number;

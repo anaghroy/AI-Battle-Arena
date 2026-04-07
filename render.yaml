@@ -1,92 +1,12 @@
-# render.yaml — AI Battle Arena Blueprint
-# Render reads this file to provision your entire infrastructure.
-# Place this in your repository root and connect via Render Dashboard > New > Blueprint.
-#
-# Since your image is already on Docker Hub, Render pulls it directly —
-# no build step needed. runtime: image = prebuilt image mode.
-
 services:
   - type: web
     name: ai-battle-arena
-    runtime: image                          # pull from Docker Hub, don't build
-    image:
-      url: docker.io/anaghroy/ai-battle-arena:latest
-      # If your Docker Hub repo is PRIVATE, uncomment and add credentials:
-      # creds:
-      #   fromRegistryCredential: docker-hub-creds   # name of credential in Render Dashboard
-
-    plan: starter                           # $7/mo — free tier doesn't support prebuilt images
-    region: oregon                          # or: frankfurt, singapore, ohio
-
-    healthCheckPath: /health                # Render pings this to confirm deploy success
-                                            # Add GET /health → { status: "ok" } to your Express app
-
-    # All API keys injected at runtime — never baked into the image
+    env: docker
+    plan: free
+    dockerContext: .
+    dockerFilePath: ./Dockerfile
+    branch: main
+    autoDeploy: true
     envVars:
-      - key: NODE_ENV
-        value: production
-
       - key: PORT
-        value: "3000"
-
-      # ── MongoDB ──────────────────────────────────────────────────────────
-      - key: MONGODB_URI
-        sync: false                         # sync: false = Render asks you to enter value in Dashboard
-
-      # ── Redis ──────────────────────────────────────────────────────────
-      - key: REDIS_URL
-        sync: false
-
-      # ── Auth ─────────────────────────────────────────────────────────────
-      - key: JWT_SECRET
-        sync: false
-      - key: GOOGLE_CLIENT_SECRET
-        sync: false
-      - key: GOOGLE_CLIENT_ID
-        sync: false
-      - key: GITHUB_CLIENT_ID
-        sync: false
-      - key: GITHUB_CLIENT_SECRET
-        sync: false
-      - key: VITE_GOOGLE_CLIENT_ID
-        sync: false
-      - key: VITE_GITHUB_CLIENT_ID
-        sync: false
-      # ── AI Model APIs ─────────────────────────────────────────────────────
-      - key: GEMINI_API_KEY
-        sync: false
-
-      - key: COHERE_API_KEY
-        sync: false
-
-      - key: GROQ_API_KEY
-        sync: false
-
-      - key: DEEPGRAM_API_KEY
-        sync: false
-      - key: NVIDIA_API_KEY
-        sync: false
-      - key: SHOTSTACK_API_KEY
-        sync: false
-      - key: PEXELS_API_KEY
-        sync: false
-      - key: HYPEREAL_API_KEY
-        sync: false
-
-      # ── Email (Brevo) ─────────────────────────────────────────────────────
-      - key: BREVO_SENDER_EMAIL
-        sync: false
-
-      - key: BREVO_API_KEY
-        sync: false
-      # ── Image (ImageKit) ─────────────────────────────────────────────────────
-      - key: IMAGEKIT_PUBLIC_KEY
-        sync: false
-      - key: IMAGEKIT_PRIVATE_KEY
-        sync: false
-      - key: IMAGEKIT_URL_ENDPOINT
-        sync: false
-      
-      # ── Frontend URL ─────────────────────────────────────────────────────
-      - key: FRONTEND_URL
-        sync: false
+        value: 3000
