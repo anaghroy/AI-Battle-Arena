@@ -33,4 +33,4 @@ COPY --from=frontend-builder /app/dist /app/public
 EXPOSE 3000
 
 # Run compiled JS (NOT TS, NOT dev)
-CMD ["node", "server.js"]
+CMD ["node", "dist/server.js"]
