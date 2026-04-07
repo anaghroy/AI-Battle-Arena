@@ -1,0 +1,13 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env        # inject secrets at runtime, not build time
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped

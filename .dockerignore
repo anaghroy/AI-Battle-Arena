@@ -1,25 +1,25 @@
-node_modules
-.git
-.gitignore
-.env
+# Dependencies (reinstalled inside Docker)
+**/node_modules
 
-# OS files
-.DS_Store
-Thumbs.db
+# Build artifacts
+**/dist
+**/.next
 
-# Build output
-dist
-build
+# Environment files (never bake secrets into the image)
+**/.env
+**/.env.*
+!**/.env.example
 
-# Logs
-npm-debug.log
-yarn-debug.log
-yarn-error.log
+# Dev/editor files
+**/.git
+**/.gitignore
+**/.DS_Store
+**/Thumbs.db
+**/*.log
+**/.vscode
+**/.idea
 
-# OS files
-.DS_Store
-Thumbs.db
-
-# Build output
-dist
-build
+# Docker files themselves
+Dockerfile
+.dockerignore
+docker-compose*.yml

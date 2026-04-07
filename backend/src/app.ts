@@ -32,4 +32,8 @@ app.get("/heath", (req, res) => {
   res.json({ message: "Server is running" });
 });
 
+app.get("*name", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public", "index.html"));
+});
+
 export default app;
