@@ -36,7 +36,6 @@ const getPexelsVideo = async (query: string): Promise<string> => {
 
     return video.video_files[0].link; // direct video URL
   } catch (error) {
-    console.error("Pexels Error:", error);
     throw new Error("Failed to fetch video");
   }
 };
@@ -121,7 +120,6 @@ const renderVideo = async (timeline: any): Promise<string> => {
 
     return url;
   } catch (error) {
-    console.error("Shotstack Error:", error);
     throw new Error("Video render failed");
   }
 };
@@ -129,9 +127,7 @@ const renderVideo = async (timeline: any): Promise<string> => {
 // MAIN VIDEO BATTLE FUNCTION
 export const generateVideoBattle = async (prompt: string) => {
   try {
-    console.log("Generating video battle...");
-
-    // Step 1: Create variations
+       // Step 1: Create variations
     const queryA = prompt;
     const queryB = prompt + " cinematic lighting";
 
@@ -162,7 +158,6 @@ export const generateVideoBattle = async (prompt: string) => {
       },
     };
   } catch (error) {
-    console.error("Video Battle Error:", error);
     throw new Error("Video generation failed");
   }
 };

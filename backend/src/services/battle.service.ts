@@ -20,24 +20,17 @@ export const runBattle = async (
   fileBuffer?: Buffer,
 ) => {
   try {
-    console.log("Running battle type:", type);
     if (type === "pdf") {
       if (!fileBuffer) throw new Error("PDF file required");
 
-      console.log("Extracting PDF text...");
-
       const text = await extractPdfText(fileBuffer);
 
-      const trimmedText = text.slice(0, 5000); // avoid token overflow
-
-      console.log("Generating summaries...");
+      const trimmedText = text.slice(0, 5000);
 
       const [solutionA, solutionB] = await Promise.all([
         generateSummaryA(trimmedText),
         generateSummaryB(trimmedText),
       ]);
-
-      console.log("Running judge...");
 
       const graph = buildBattleGraph();
 
@@ -47,8 +40,6 @@ export const runBattle = async (
         solutionA: solutionA.text,
         solutionB: solutionB.text,
       });
-
-      console.log("Uploading PDF...");
 
       const pdfUrl = await uploadPdfToImageKit(fileBuffer, "pdf");
 
@@ -102,19 +93,13 @@ export const runBattle = async (
     }
 
     if (type === "image") {
-      console.log("Generating images...");
-
       const imageResult = await generateImageBattle(userInput);
       const { solutionA, solutionB } = imageResult;
-
-      console.log("Describing images...");
 
       const [descA, descB] = await Promise.all([
         describeImage(solutionA.imageUrl),
         describeImage(solutionB.imageUrl),
       ]);
-
-      console.log("Running judge...");
 
       const graph = buildBattleGraph();
 
@@ -153,19 +138,13 @@ export const runBattle = async (
       };
     }
     if (type === "video") {
-      console.log("Generating videos...");
-
       const videoResult = await generateVideoBattle(userInput);
       const { solutionA, solutionB } = videoResult;
-
-      console.log("Describing videos directly with Gemini API...");
 
       const [descA, descB] = await Promise.all([
         describeVideo(solutionA.videoUrl),
         describeVideo(solutionB.videoUrl),
       ]);
-
-      console.log("Running judge...");
 
       const graph = buildBattleGraph();
 

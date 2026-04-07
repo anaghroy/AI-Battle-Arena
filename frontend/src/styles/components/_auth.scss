@@ -1,3 +1,5 @@
+@use "../base/responsive" as r;
+
 .auth-layout {
   display: flex;
   min-height: 100vh;
@@ -10,7 +12,7 @@
     position: relative;
     padding: 1rem; // Margin-like effect on left side
 
-    @media (min-width: 1024px) {
+    @include r.desktop {
       display: block; // visible on desktop
     }
 
@@ -86,7 +88,7 @@
     padding: 2rem;
     position: relative;
 
-    @media (min-width: 1024px) {
+    @include r.desktop {
       width: 50%;
     }
 
@@ -113,6 +115,12 @@
     font-family: var(--font-inter-regular);
     font-size: 1.05rem;
     line-height: 1.5;
+  }
+
+  @include r.mobile {
+    h1 {
+      font-size: 2.2rem;
+    }
   }
 }
 

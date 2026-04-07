@@ -112,8 +112,7 @@ const useAuthStore = create((set) => ({
       });
       return true;
     } catch (error) {
-      console.error("SOCIAL LOGIN ERROR:", error.response?.data || error.message);
-      set({ 
+         set({ 
         error: error.response?.data?.message || `${provider} login failed`, 
         isLoading: false 
       });

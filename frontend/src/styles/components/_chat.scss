@@ -1,3 +1,5 @@
+@use "../base/responsive" as r;
+
 .chat-container {
   width: 100%;
   max-width: 1100px;
@@ -6,6 +8,10 @@
   flex-direction: column;
   padding: 20px;
   justify-content: space-between;
+
+  @include r.mobile {
+    padding: 10px;
+  }
 
   .chat-messages {
     flex: 1;
@@ -23,6 +29,10 @@
     .message {
       display: flex;
       max-width: 80%;
+
+      @include r.mobile {
+        max-width: 90%;
+      }
 
       &.user-message {
         align-self: flex-end;
@@ -71,6 +81,11 @@
         gap: 20px;
         width: 100%;
         max-width: 1100px;
+
+        @include r.mobile {
+          flex-direction: column;
+          gap: 12px;
+        }
         
         .assistant-card {
           flex: 1;
@@ -158,6 +173,11 @@
           .scores-container {
             display: flex;
             gap: 12px;
+
+            @include r.mobile {
+              flex-direction: column;
+              gap: 4px;
+            }
             
             .score-badge {
               background-color: var(--bg-secondary);
@@ -433,6 +453,12 @@
     flex-direction: column;
     align-items: center;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+
+    @include r.mobile {
+      padding: 20px;
+      width: 90vw;
+      text-align: center;
+    }
 
     .listening-indicator {
       position: relative;

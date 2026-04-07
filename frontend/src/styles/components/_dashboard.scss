@@ -1,3 +1,5 @@
+@use "../base/responsive" as r;
+
 .app-container {
   display: flex;
   height: 100vh;
@@ -12,14 +14,50 @@
   background-color: var(--bg-secondary);
   display: flex;
   flex-direction: column;
-  transition: width 0.3s ease, transform 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-right: 1px solid var(--border-color);
   
+  // Default Mobile Behavior (Absolute)
+  @include r.mobile {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 50;
+    width: 280px; // slightly wider to feel like a drawer
+  }
+
+  // Tablet/Laptop Default Behavior (Absolute or push depending on preference, but going absolute is safer for smaller space)
+  @include r.tablet-laptop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 50;
+    width: 280px;
+  }
+
+  // Desktop Behavior
+  @include r.desktop {
+    position: static;
+    height: auto;
+    width: 260px;
+    z-index: 10;
+  }
+  
   &.hidden {
-    width: 0;
-    transform: translateX(-100%);
-    border-right: none;
-    overflow: hidden;
+    @include r.mobile {
+      transform: translateX(-100%);
+    }
+    @include r.tablet-laptop {
+      transform: translateX(-100%);
+    }
+    @include r.desktop {
+      width: 0;
+      transform: translateX(-100%);
+      border-right: none;
+      overflow: hidden;
+    }
   }
 
   .sidebar-header {

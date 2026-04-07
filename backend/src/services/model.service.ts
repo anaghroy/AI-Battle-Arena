@@ -125,7 +125,6 @@ export const generateBattleSolutions = async (prompt: string) => {
       solutionB,
     };
   } catch (error) {
-    console.error("Parallel Execution Error:", error);
     throw new Error("Failed to generate battle solutions");
   }
 };

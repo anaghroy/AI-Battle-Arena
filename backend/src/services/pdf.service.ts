@@ -6,7 +6,6 @@ export const extractPdfText = async (buffer: Buffer): Promise<string> => {
     const result = await parser.getText();
     return result.text;
   } catch (error) {
-    console.error("PDF Parse Error:", error);
     throw new Error("Failed to extract PDF text");
   }
 };

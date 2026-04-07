@@ -75,7 +75,6 @@ export const getLeaderboard = async (req: Request, res: Response): Promise<void>
 
     res.status(200).json({ success: true, leaderboard: rankedLeaderboard });
   } catch (error: any) {
-    console.error("Leaderboard Error:", error);
-    res.status(500).json({ success: false, message: "Error fetching leaderboard." });
+     res.status(500).json({ success: false, message: "Error fetching leaderboard." });
   }
 };

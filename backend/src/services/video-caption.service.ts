@@ -21,11 +21,8 @@ const downloadVideo = async (url: string): Promise<Buffer> => {
 // VIDEO → TEXT DESCRIPTION
 export const describeVideo = async (videoUrl: string) => {
   try {
-    console.log("Downloading video...");
 
     const videoBuffer = await downloadVideo(videoUrl);
-
-    console.log("Sending to Gemini...");
 
     const result = await model.generateContent([
       {
@@ -52,14 +49,8 @@ Keep it concise but informative.
 
     const text = result.response.text();
 
-    console.log("Video description:", text);
-
     return text;
   } catch (error: any) {
-    console.error(
-      "Video Caption Error:",
-      error?.message || error
-    );
     throw new Error("Failed to describe video");
   }
 };

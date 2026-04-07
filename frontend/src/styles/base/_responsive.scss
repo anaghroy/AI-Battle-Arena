@@ -1,0 +1,50 @@
+// Responsive Breakpoints
+$breakpoint-mobile: 768px;
+$breakpoint-laptop: 1024px;
+
+// Mixins
+@mixin mobile {
+  @media (max-width: #{$breakpoint-mobile}) {
+    @content;
+  }
+}
+
+@mixin tablet-laptop {
+  @media (min-width: #{$breakpoint-mobile + 1px}) and (max-width: #{$breakpoint-laptop}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$breakpoint-laptop + 1px}) {
+    @content;
+  }
+}
+
+// Global responsive utility classes
+body {
+  overflow-x: hidden;
+}
+
+// Global Overlay
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 40; // Just below sidebar which might need z-index: 50
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  @include desktop {
+    display: none !important; // Never show overlay on desktop
+  }
+}

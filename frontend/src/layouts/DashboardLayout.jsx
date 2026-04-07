@@ -23,6 +23,10 @@ const DashboardLayout = () => {
 
   return (
     <div className="app-container">
+      <div 
+        className={`sidebar-overlay ${isSidebarOpen ? 'visible' : ''}`} 
+        onClick={toggleSidebar}
+      ></div>
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <div className="main-content">
         <Header toggleSidebar={toggleSidebar} />

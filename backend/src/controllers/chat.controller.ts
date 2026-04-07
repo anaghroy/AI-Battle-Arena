@@ -121,7 +121,6 @@ export const deleteChat = async (req: Request, res: Response): Promise<void> => 
 
     res.json({ message: "Chat deleted successfully", id });
   } catch (error) {
-    console.error("Error deleting chat:", error);
     res.status(500).json({ error: "Failed to delete chat" });
   }
 };
@@ -175,7 +174,6 @@ export const searchChats = async (req: Request, res: Response): Promise<void> =>
 
     res.json(chats);
   } catch (error) {
-    console.error("Error searching chats:", error);
     res.status(500).json({ error: "Search failed" });
   }
 };

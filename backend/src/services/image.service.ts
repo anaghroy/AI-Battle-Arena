@@ -68,10 +68,7 @@ const uploadToImageKit = async (buffer: Buffer, name: string) => {
   }
 };
 // Upload PDF to ImageKit
-export const uploadPdfToImageKit = async (
-  buffer: Buffer,
-  name: string
-) => {
+export const uploadPdfToImageKit = async (buffer: Buffer, name: string) => {
   const base64 = buffer.toString("base64");
 
   const upload = await imagekit.upload({
@@ -85,14 +82,10 @@ export const uploadPdfToImageKit = async (
 // MAIN FUNCTION
 export const generateImageBattle = async (prompt: string) => {
   try {
-    console.log("Generating images via NVIDIA FLUX...");
-
     const [imgA, imgB] = await Promise.all([
       generateImage(prompt),
       generateImage(prompt + ", cinematic lighting, ultra detailed"),
     ]);
-
-    console.log("Uploading to ImageKit...");
 
     const [urlA, urlB] = await Promise.all([
       uploadToImageKit(imgA, "A"),
@@ -110,7 +103,6 @@ export const generateImageBattle = async (prompt: string) => {
       },
     };
   } catch (error: any) {
-    console.error("Image Battle Error:", error?.message || error);
     throw new Error("Image generation failed");
   }
 };

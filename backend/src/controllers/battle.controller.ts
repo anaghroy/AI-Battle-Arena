@@ -45,11 +45,7 @@ export const voiceBattle = async (
       return;
     }
 
-    console.log("File received:", file.originalname);
-
-    const text = await speechToText(file.buffer);
-
-    console.log("Transcribed Text:", text);
+     const text = await speechToText(file.buffer);
 
     const result = await runBattle(text);
 

@@ -39,7 +39,5 @@ export const sendEmail = async ({
 
   const data = await client.transactionalEmails.sendTransacEmail(emailData);
 
-  console.log("📧 Email sent to:", to, "| Message ID:", data.messageId);
-
   return data;
 };
