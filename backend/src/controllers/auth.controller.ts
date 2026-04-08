@@ -405,7 +405,6 @@ export const githubAuth = async (
         client_id: config.GITHUB_CLIENT_ID,
         client_secret: config.GITHUB_CLIENT_SECRET,
         code,
-        redirect_uri: `${frontendUrl}/login`,
       },
       {
         headers: {

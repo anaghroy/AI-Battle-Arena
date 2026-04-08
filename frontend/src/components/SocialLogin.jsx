@@ -25,8 +25,7 @@ const SocialLogin = () => {
       alert("GitHub Client ID is missing in frontend .env");
       return;
     }
-    const redirectUri = `${window.location.origin}/login`;
-    window.location.assign(`https://github.com/login/oauth/authorize?client_id=${clientId}&scope=user:email&redirect_uri=${redirectUri}`);
+    window.location.assign(`https://github.com/login/oauth/authorize?client_id=${clientId}&scope=user:email`);
   };
 
   useEffect(() => {
