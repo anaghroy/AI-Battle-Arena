@@ -1,6 +1,7 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL =
+  import.meta.env.MODE === "production" ? "/api" : "http://localhost:3000/api";
 
 const api = axios.create({
   baseURL: API_URL,
@@ -9,9 +10,9 @@ const api = axios.create({
 
 const leaderboardService = {
   getLeaderboard: async () => {
-    const response = await api.get('/leaderboard');
+    const response = await api.get("/leaderboard");
     return response.data.leaderboard;
-  }
+  },
 };
 
 export default leaderboardService;
