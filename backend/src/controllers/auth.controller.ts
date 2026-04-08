@@ -385,136 +385,90 @@ export const googleAuth = async (
   }
 };
 
-export const githubAuth = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const githubAuth = async (req: Request, res: Response) => {
   try {
-    const { code } = req.body;
+    const code = req.query.code as string;
 
     if (!code) {
-      res.status(400).json({ message: "GitHub code required" });
-      return;
+      return res.redirect("/login");
     }
 
     // Step 1: Get access token
-    const frontendUrl = config.FRONTEND_URL || "http://localhost:5173";
     const tokenRes = await axios.post(
       "https://github.com/login/oauth/access_token",
       {
         client_id: config.GITHUB_CLIENT_ID,
         client_secret: config.GITHUB_CLIENT_SECRET,
         code,
-        redirect_uri: `${frontendUrl}/login`,
+        redirect_uri: `${config.FRONTEND_URL}/auth/github`,
       },
       {
-        headers: {
-          Accept: "application/json",
-        },
-      },
+        headers: { Accept: "application/json" },
+      }
     );
 
     const accessToken = tokenRes.data.access_token;
 
     if (!accessToken) {
-      res.status(400).json({ message: "Failed to get access token" });
-      return;
+      return res.redirect("/login");
     }
 
-    // Step 2: Get user info
+    // Step 2: Get user
     const userRes = await axios.get("https://api.github.com/user", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+      headers: { Authorization: `Bearer ${accessToken}` },
     });
 
     const githubUser = userRes.data;
 
-    // Step 3: Get email (IMPORTANT)
+    // Step 3: Get email
     const emailRes = await axios.get("https://api.github.com/user/emails", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+      headers: { Authorization: `Bearer ${accessToken}` },
     });
 
     const primaryEmailObj = emailRes.data.find(
-      (e: any) => e.primary && e.verified,
+      (e: any) => e.primary && e.verified
     );
 
-    const email: string | undefined = primaryEmailObj?.email;
+    const email = primaryEmailObj?.email;
 
     if (!email) {
-      res.status(400).json({ message: "Email not found from GitHub" });
-      return;
+      return res.redirect("/login");
     }
 
-    // Safe values
-    const username: string =
-      typeof githubUser.login === "string"
-        ? githubUser.login
-        : email.split("@")[0];
-
-    const githubId: string =
-      typeof githubUser.id === "number" ? String(githubUser.id) : "";
-
-    const picture: string | null =
-      typeof githubUser.avatar_url === "string" ? githubUser.avatar_url : null;
-
-    // Step 4: Find or create user
+    // Step 4: Create/find user
     let user = await userModel.findOne({ email });
 
     if (!user) {
       user = await userModel.create({
-        username,
+        username: githubUser.login,
         email,
         provider: "github",
-        githubId: githubId,
-        picture,
+        githubId: String(githubUser.id),
+        picture: githubUser.avatar_url,
         verified: true,
       });
     }
 
-    user.provider = "github";
-    await user.save();
-
-    // Step 5: Generate JWT
+    // Step 5: JWT
     const token = jwt.sign(
       { id: user._id.toString(), username: user.username },
       config.JWT_SECRET,
-      { expiresIn: "3d" },
+      { expiresIn: "3d" }
     );
 
-    // Step 6: Set cookie
+    // Step 6: COOKIE
     res.cookie("token", token, {
       httpOnly: true,
-      secure: config.NODE_ENV === "production",
-      sameSite: config.NODE_ENV === "production" ? "none" : "lax",
+      secure: true,
+      sameSite: "lax", 
       maxAge: 3 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(200).json({
-      message: "GitHub login successful",
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-      },
-    });
-  } catch (error: any) {
-    console.error("GitHub Auth Error:", error.response?.data || error.message);
-    try {
-      require("fs").writeFileSync(
-        "github_error_log.txt",
-        String(error.message || error) +
-          "\n" +
-          (error.response?.data ? JSON.stringify(error.response.data) : ""),
-      );
-    } catch (e) {}
+    // Step 7: REDIRECT TO FRONTEND
+    return res.redirect("/");
 
-    res.status(500).json({
-      message: "GitHub authentication failed",
-      error: error?.message || String(error),
-      details: error.response?.data,
-    });
+  } catch (error) {
+    console.error("GitHub Auth Error:", error);
+    return res.redirect("/login");
   }
 };
