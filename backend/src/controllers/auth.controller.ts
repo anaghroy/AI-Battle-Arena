@@ -116,8 +116,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: config.NODE_ENV === "production",
+    sameSite: config.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 3 * 24 * 60 * 60 * 1000,
   });
 
@@ -487,8 +487,8 @@ export const githubAuth = async (
     // Step 6: Set cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "lax",
+      secure: config.NODE_ENV === "production",
+      sameSite: config.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 3 * 24 * 60 * 60 * 1000,
     });
 
