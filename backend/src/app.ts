@@ -9,6 +9,7 @@ import chatRouter from "./routes/chat.route.js";
 import leaderboardRouter from "./routes/leaderboard.route.js";
 const app = express();
 
+/**Middleware */
 app.use(
   cors({
     origin: true,
