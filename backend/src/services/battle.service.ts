@@ -141,10 +141,30 @@ export const runBattle = async (
       const videoResult = await generateVideoBattle(userInput);
       const { solutionA, solutionB } = videoResult;
 
-      const [descA, descB] = await Promise.all([
+      const results = await Promise.allSettled([
         describeVideo(solutionA.videoUrl),
         describeVideo(solutionB.videoUrl),
       ]);
+
+      const descA = results[0].status === "fulfilled" ? results[0].value : null;
+
+      const descB = results[1].status === "fulfilled" ? results[1].value : null;
+
+      if (!descA || !descB) {
+        console.error("Video description failed:", results);
+
+        return {
+          error: "One or both videos failed to process",
+          solutionA: {
+            ...solutionA,
+            description: descA || "Failed to generate description",
+          },
+          solutionB: {
+            ...solutionB,
+            description: descB || "Failed to generate description",
+          },
+        };
+      }
 
       const graph = buildBattleGraph();
 
