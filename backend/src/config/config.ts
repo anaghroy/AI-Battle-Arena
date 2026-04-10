@@ -24,6 +24,7 @@ type AppConfig = {
   readonly FRONTEND_URL: string;
   readonly NODE_ENV:string;
   readonly REDIS_URL:string;
+  readonly OPENROUTER_API_KEY:string;
 };
 
 const config: AppConfig = {
@@ -49,6 +50,7 @@ const config: AppConfig = {
   FRONTEND_URL: process.env.FRONTEND_URL as string,
   NODE_ENV:process.env.NODE_ENV as string,
   REDIS_URL:process.env.REDIS_URL as string,
+  OPENROUTER_API_KEY:process.env.OPENROUTER_API_KEY as string,
 };
 
 export default config;

@@ -1,17 +1,20 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { OpenAI } from "openai";
 import { CohereClient } from "cohere-ai";
 import Groq from "groq-sdk";
 import config from "../config/config.js";
 
 // ENV CONFIG
 
-const { GEMINI_API_KEY, COHERE_API_KEY, GROQ_API_KEY } = config;
+const { OPENROUTER_API_KEY, COHERE_API_KEY, GROQ_API_KEY } = config;
 
-if (!GEMINI_API_KEY || !COHERE_API_KEY || !GROQ_API_KEY) {
+if (!OPENROUTER_API_KEY || !COHERE_API_KEY || !GROQ_API_KEY) {
   throw new Error("Missing API keys in environment variables");
 }
 
-const gemini = new GoogleGenerativeAI(GEMINI_API_KEY);
+const openrouter = new OpenAI({
+  apiKey: OPENROUTER_API_KEY,
+  baseURL: "https://openrouter.ai/api/v1",
+});
 
 const cohere = new CohereClient({
   token: COHERE_API_KEY,
@@ -86,21 +89,26 @@ export const judgeSolutions = async (
   prompt: string,
 ): Promise<ModelResponse> => {
   const models = [
-    "gemini-1.5-flash-latest",
-    "gemini-2.0-flash",
+    "mistralai/mistral-7b-instruct:free",
+    "mistralai/mixtral-8x7b-instruct:free",
+    "meta-llama/llama-3-8b-instruct:free",
   ];
 
   for (const modelName of models) {
     try {
       console.log(`🧠 Trying model: ${modelName}`);
 
-      const model = gemini.getGenerativeModel({
+      const completion = await openrouter.chat.completions.create({
         model: modelName,
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
       });
 
-      const result = await model.generateContent(prompt);
-
-      const text = result?.response?.text?.();
+      const text = completion.choices?.[0]?.message?.content;
 
       if (!text) {
         console.warn(`Empty response from ${modelName}`);
@@ -115,16 +123,11 @@ export const judgeSolutions = async (
       };
     } catch (error: any) {
       console.error(`${modelName} failed:`, error.message);
-
-      // If it's a 503, try next model
-      if (error?.message?.includes("503")) {
-        continue;
-      }
+      continue;
     }
   }
 
-  // All models failed
-  throw new Error("All Gemini models failed to judge solutions");
+  throw new Error("All free models failed");
 };
 
 export const generateSummaryA = async (text: string) => {
