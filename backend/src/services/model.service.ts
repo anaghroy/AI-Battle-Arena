@@ -96,7 +96,7 @@ export const judgeSolutions = async (
 
   for (const modelName of models) {
     try {
-      console.log(`🧠 Trying model: ${modelName}`);
+      console.log(`Trying model: ${modelName}`);
 
       const completion = await openrouter.chat.completions.create({
         model: modelName,
