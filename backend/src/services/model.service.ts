@@ -89,8 +89,8 @@ export const judgeSolutions = async (
   prompt: string,
 ): Promise<ModelResponse> => {
   const models = [
-    "openchat/openchat-7b:free",
-    "nousresearch/nous-hermes-2-mixtral-8x7b-dpo:free",
+    "openchat/openchat-7b",
+    "nousresearch/nous-hermes-2-mixtral-8x7b-dpo",
     "meta-llama/llama-3-8b-instruct",
   ];
 

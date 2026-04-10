@@ -9,10 +9,34 @@ const cleanJSON = (text: string): string => {
     .replace(/```/g, "") // remove ```
     .trim(); // remove spaces/newlines
 };
-const extractJSON = (text: string): string | null => {
-  const cleaned = cleanJSON(text);
-  const match = cleaned.match(/\{[\s\S]*\}/);
-  return match ? match[0] : null;
+export const extractJSON = (text: string): string | null => {
+  try {
+    const cleaned = cleanJSON(text);
+
+    let braceStack = 0;
+    let startIndex = -1;
+
+    for (let i = 0; i < cleaned.length; i++) {
+      const char = cleaned[i];
+
+      if (char === "{") {
+        if (braceStack === 0) startIndex = i;
+        braceStack++;
+      }
+
+      if (char === "}") {
+        braceStack--;
+
+        if (braceStack === 0 && startIndex !== -1) {
+          return cleaned.slice(startIndex, i + 1);
+        }
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
 };
 export const judgeNode = async (
   state: BattleState,
