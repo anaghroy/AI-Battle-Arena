@@ -85,24 +85,46 @@ export const generateGroqSolution = async (
 export const judgeSolutions = async (
   prompt: string,
 ): Promise<ModelResponse> => {
-  try {
-    const model = gemini.getGenerativeModel({
-      model: "gemini-2.5-flash",
-    });
+  const models = [
+    "gemini-1.5-flash-latest",
+    "gemini-2.0-flash",
+  ];
 
-    const result = await model.generateContent(prompt);
+  for (const modelName of models) {
+    try {
+      console.log(`🧠 Trying model: ${modelName}`);
 
-    const response = result.response;
-    const text = response.text();
+      const model = gemini.getGenerativeModel({
+        model: modelName,
+      });
 
-    return {
-      text,
-      model: "gemini-2.5-flash",
-    };
-  } catch (error) {
-    console.error("Gemini Error:", error);
-    throw new Error("Failed to judge solutions");
+      const result = await model.generateContent(prompt);
+
+      const text = result?.response?.text?.();
+
+      if (!text) {
+        console.warn(`Empty response from ${modelName}`);
+        continue;
+      }
+
+      console.log(`Success with ${modelName}`);
+
+      return {
+        text,
+        model: modelName,
+      };
+    } catch (error: any) {
+      console.error(`${modelName} failed:`, error.message);
+
+      // If it's a 503, try next model
+      if (error?.message?.includes("503")) {
+        continue;
+      }
+    }
   }
+
+  // All models failed
+  throw new Error("All Gemini models failed to judge solutions");
 };
 
 export const generateSummaryA = async (text: string) => {
