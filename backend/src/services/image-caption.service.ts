@@ -1,40 +1,64 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { OpenAI } from "openai";
 import config from "../config/config.js";
 
-const genAI = new GoogleGenerativeAI(config.GEMINI_API_KEY);
+const openrouter = new OpenAI({
+  apiKey: config.OPENROUTER_API_KEY,
+  baseURL: "https://openrouter.ai/api/v1",
+});
 
 // Convert image URL → text description
-export const describeImage = async (imageUrl: string) => {
-  try {
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
-    });
+export const describeImage = async (
+  imageUrl: string,
+): Promise<string | null> => {
+  const models = [
+    "openai/gpt-4o-mini",
+    "meta-llama/llama-3.2-11b-vision-instruct",
+  ];
+  for (const modelName of models) {
+    try {
+      console.log(`Trying: ${modelName}`);
 
-    const result = await model.generateContent([
-      {
-        text: "Describe this image in detail for comparison. Focus on style, objects, lighting, and quality.",
-      },
-      {
-        inlineData: {
-          mimeType: "image/png",
-          data: await fetchImageAsBase64(imageUrl),
-        },
-      },
-    ]);
+      const res = await openrouter.chat.completions.create({
+        model: modelName,
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `
+Describe this image in 3-4 sentences.
 
-    const response = await result.response;
-    const text = response.text();
+Focus on:
+- main subject
+- environment
+- lighting
+- style (realistic, cinematic, etc.)
+                `,
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: imageUrl,
+                },
+              },
+            ],
+          },
+        ],
+        temperature: 0.5,
+      });
 
-    return text;
-  } catch (error) {
-    console.error("Image Caption Error:", error);
-    throw new Error("Failed to describe image");
+      const text = res.choices?.[0]?.message?.content;
+
+      if (text) {
+        console.log(`Success: ${modelName}`);
+        return text;
+      }
+    } catch (error: any) {
+      console.error(`${modelName} failed:`, error.message);
+      continue;
+    }
   }
-};
 
-// Helper → convert URL → base64
-const fetchImageAsBase64 = async (url: string): Promise<string> => {
-  const res = await fetch(url);
-  const buffer = await res.arrayBuffer();
-  return Buffer.from(buffer).toString("base64");
+  throw new Error("All vision models failed");
 };

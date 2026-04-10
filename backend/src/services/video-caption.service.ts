@@ -7,18 +7,6 @@ const openrouter = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
 });
 
-// const model = openrouter.chat.completions.create({
-//   model: "gemini-2.5-flash",
-// });
-
-// // Download video → buffer
-// const downloadVideo = async (url: string): Promise<Buffer> => {
-//   const response = await axios.get(url, {
-//     responseType: "arraybuffer",
-//   });
-
-//   return Buffer.from(response.data);
-// };
 
 // VIDEO → TEXT DESCRIPTION
 export const describeVideo = async (prompt: string): Promise<string | null> => {
