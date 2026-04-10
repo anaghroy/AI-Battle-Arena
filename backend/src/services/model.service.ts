@@ -89,9 +89,9 @@ export const judgeSolutions = async (
   prompt: string,
 ): Promise<ModelResponse> => {
   const models = [
-    "mistralai/mistral-7b-instruct:free",
-    "mistralai/mixtral-8x7b-instruct:free",
-    "meta-llama/llama-3-8b-instruct:free",
+    "openchat/openchat-7b:free",
+    "nousresearch/nous-hermes-2-mixtral-8x7b-dpo:free",
+    "meta-llama/llama-3-8b-instruct",
   ];
 
   for (const modelName of models) {
